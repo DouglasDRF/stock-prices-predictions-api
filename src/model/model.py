@@ -32,9 +32,10 @@ next_open_normalized = np.array([dataset_normalized[:,0][i + HISTORY_DAYS].copy(
 next_open_normalized = np.expand_dims(next_open_normalized, -1)
 
 next_open_values = np.array([dataset.values[:,0][i + HISTORY_DAYS].copy() for i in range(len(dataset) - HISTORY_DAYS)])
-next_open_values = np.expand_dims(next_open_normalized, -1)
+next_open_values = np.expand_dims(next_open_values, -1)
+
 y_normalizer = preprocessing.MinMaxScaler()
-y_scaler = y_normalizer.fit(np.reshape(next_open_values, (2814,1)))
+y_scaler = y_normalizer.fit(next_open_values)
 
 assert history_normalized.shape[0] == next_open_values.shape[0]
 
@@ -44,10 +45,10 @@ TEST_SPLIT = 0.9
 TEST_N = int(history_normalized.shape[0] * TEST_SPLIT)
 
 history_train = history_normalized[:TEST_N]
-y_train = next_open_values[:TEST_N]
+y_train = next_open_normalized[:TEST_N]
 
 history_test = history_normalized[TEST_N:]
-y_test = next_open_values[TEST_N:]
+y_test = next_open_normalized[TEST_N:]
 
 unscaled_y = next_open_values[TEST_N:]
 
@@ -67,7 +68,7 @@ model.compile(optimizer=adam, loss='mse')
 
 # Traning
 # %%
-model.fit(x=history_train, y=y_train, batch_size=32, epochs=50, shuffle=True, validation_split=0.1)
+model.fit(x=history_train, y=y_train, batch_size=64, epochs=50, shuffle=True, validation_split=0.1)
 evaluation = model.evaluate(history_test, y_test)
 print(evaluation)
 
@@ -84,9 +85,11 @@ real_mse = np.mean(np.square(unscaled_y - y_test_predicted))
 scaled_mse = real_mse / (np.max(unscaled_y) - np.min(unscaled_y)) * 100
 print(scaled_mse)
 
+assert unscaled_y.shape == y_test_predicted.shape
+
 # %%
-real = plt.plot(unscaled_y[0, -1], label='real')
-predicted = plt.plot(y_test_predicted[0, -1], label='predicted')
+plt.plot(unscaled_y[0:-1], scalex=True, label='real')
+plt.plot(y_test_predicted[0:-1], scalex=True, label='predicted')
 plt.legend(['Real', 'Predicted'])
-plt.show()
 # %%
+plt.show()
