@@ -13,21 +13,16 @@ HISTORY_DAYS = 40
 TICKER = 'ITUB4'
 
 # %% 
-raw_dataframe = pd.read_csv('../../datasets/b3_stocks_1994_2020.csv')
+raw_dataframe = pd.read_csv('../../../datasets/b3_stocks_1994_2020.csv')
 dataset = raw_dataframe[raw_dataframe.ticker == TICKER]
-# %%
-plt.plot(range(1, len(dataset) + 1), dataset.close, label=('day', 'close'), zorder=1)
-plt.show()
-
-# %%
 dataset = dataset.drop(columns=["ticker", "datetime"])
  
 # Preprocessing
 # %%
 normalizer = preprocessing.MinMaxScaler()
 dataset_normalized = normalizer.fit_transform(dataset)
-
 history_normalized = np.array([dataset_normalized[i : i + HISTORY_DAYS].copy() for i in range(len(dataset_normalized) - HISTORY_DAYS)])
+
 next_open_normalized = np.array([dataset_normalized[:,0][i + HISTORY_DAYS].copy() for i in range (len(dataset_normalized) - HISTORY_DAYS)])
 next_open_normalized = np.expand_dims(next_open_normalized, -1)
 
@@ -59,7 +54,7 @@ x = LSTM(50)(lstm_input)
 x = Dropout(0.2)(x)
 x = Dense(64)(x)
 x = Activation('sigmoid')(x)
-x = Dense(1,)(x)
+x = Dense(1)(x)
 output = Activation('linear',)(x)
 model = Model(inputs=lstm_input, outputs=output)
 
@@ -77,7 +72,6 @@ print(evaluation)
 y_test_predicted = model.predict(history_test)
 y_test_predicted = y_scaler.inverse_transform(y_test_predicted)
 
-
 y_predicted = model.predict(history_normalized)
 y_predicted = y_scaler.inverse_transform(y_predicted)
 
@@ -90,6 +84,13 @@ assert unscaled_y.shape == y_test_predicted.shape
 # %%
 plt.plot(unscaled_y[0:-1], scalex=True, label='real')
 plt.plot(y_test_predicted[0:-1], scalex=True, label='predicted')
+plt.legend(['Real', 'Predicted'])
+# %%
+plt.show()
+
+# %%
+plt.plot(next_open_values[0:-1], scalex=True, label='real')
+plt.plot(y_predicted[0:-1], scalex=True, label='predicted')
 plt.legend(['Real', 'Predicted'])
 # %%
 plt.show()
