@@ -9,16 +9,16 @@ model_file_path = '../../model.h5'
 
 class StocksPredictionModel():
 
-    def __init__(self):
+    def __init__(self, history_size=40):
 
-        self.__history_days = 40
+        self.__history_size = history_size
         self.is_trained = False
 
         try:
             model = keras.models.load_model(model_file_path)
             self.is_trained = True
         except:
-            lstm_input = keras.Input(shape=(self.__history_days, 5))
+            lstm_input = keras.Input(shape=(self.__history_size, 5))
             x = LSTM(50)(lstm_input)
             x = Dropout(0.2)(x)
             x = Dense(64)(x)
@@ -38,9 +38,9 @@ class StocksPredictionModel():
     def normalize_ochlv_history(self, ochlv_history, training_mode=False):
         normalizer = preprocessing.MinMaxScaler()
         dataset_normalized = normalizer.fit_transform(ochlv_history)
-        ochlv_history_normalized = np.array([dataset_normalized[i : i + self.__history_days].copy() for i in range(len(dataset_normalized) - self.__history_days)])
+        ochlv_history_normalized = np.array([dataset_normalized[i : i + self.__history_size].copy() for i in range(len(dataset_normalized) - self.__history_size)])
 
-        next_open_values = np.array([ochlv_history.values[:,0][i + self.__history_days].copy() for i in range(len(ochlv_history) - self.__history_days)])
+        next_open_values = np.array([ochlv_history.values[:,0][i + self.__history_size].copy() for i in range(len(ochlv_history) - self.__history_size)])
         next_open_values = np.expand_dims(next_open_values, -1)
         
         self.__y_scaler = self.__y_scaler.fit(next_open_values)
@@ -49,7 +49,7 @@ class StocksPredictionModel():
         if training_mode == False:
             return ochlv_history_normalized
         else:
-            next_open_normalized = np.array([dataset_normalized[:,0][i + self.__history_days].copy() for i in range (len(dataset_normalized) -  self.__history_days)])
+            next_open_normalized = np.array([dataset_normalized[:,0][i + self.__history_size].copy() for i in range (len(dataset_normalized) -  self.__history_size)])
             next_open_normalized = np.expand_dims(next_open_normalized, -1)
             return ochlv_history_normalized, next_open_normalized, next_open_values
 
@@ -64,7 +64,6 @@ class StocksPredictionModel():
         self.current_accuracy = 100 - self.__eval(X_test, next_open_values[self.__test_n:], ochlv_history_normalized)
         self.__model.save(model_file_path, overwrite=False)
         self.is_trained = True
-
 
     def predict(self, X_ochlv_history_normalized):
         normalized_result = self.__model.predict(X_ochlv_history_normalized)

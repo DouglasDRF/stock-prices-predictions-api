@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from model import StocksPredictionModel
-from model.data_helper import split_train_test, load_dataset
+from model.data_helper import load_dataset
 
 model = StocksPredictionModel()
 
