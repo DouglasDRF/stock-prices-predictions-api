@@ -31,9 +31,8 @@ class StocksPredictionModel():
             model.compile(optimizer=adam, loss='mse')
         finally:
             self.__model = model
-
+            
         self.__y_scaler = preprocessing.MinMaxScaler()
-        self.current_accuracy = 0.0
     
     def normalize_ochlv_history(self, ochlv_history, training_mode=False):
         normalizer = preprocessing.MinMaxScaler()
@@ -62,7 +61,7 @@ class StocksPredictionModel():
         print(f'Normalized MSE: {evaluation}')
 
         self.current_accuracy = 100 - self.__eval(X_test, next_open_values[self.__test_n:], ochlv_history_normalized)
-        self.__model.save(model_file_path, overwrite=False)
+        self.__model.save(model_file_path, overwrite=True)
         self.is_trained = True
 
     def predict(self, X_ochlv_history_normalized):

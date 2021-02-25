@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from model import StocksPredictionModel
-from model.data_helper import load_dataset
+from stockpredictions.core.model import StocksPredictionModel
+from stockpredictions.core.data_helper import load_dataset
 
 model = StocksPredictionModel()
 
