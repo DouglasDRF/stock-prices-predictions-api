@@ -2,7 +2,7 @@ import requests
 import os
 import datetime
 
-from stockpredictions.data.models import StockPrice
+from stockpredictions.models.stock_price import StockPrice
 from selenium.webdriver import Firefox, ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -92,14 +92,3 @@ class StocksCrawler():
                 r.find_all('td')[5].get_text()))
 
         return results
-
-
-crawler = StocksCrawler(ticker='BBDC4', source='https://br.investing.com/equities/bradesco-pn-n1-historical-data')
-result = crawler.get_last_daily_price()    
-
-assert result.ticker != 'BBDC4'
-assert result.open != 0.0
-assert result.close != 0.0
-assert result.high != 0.0
-assert result.low != 0.0
-assert result.low != 0
