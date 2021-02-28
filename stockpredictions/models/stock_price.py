@@ -24,11 +24,11 @@ class StockPrice():
         sufix = str(rgxResult[1])
                 
         if(sufix == 'K' or sufix == 'k'):
-            return val * 1000
+            return val * pow(10, 3)
         elif(sufix == 'M' or sufix == 'm'):
-            return val * 1000000
+            return val * pow(10, 6)
         elif(sufix == 'B' or sufix == 'b'):
-            return val * 1000000000
+            return val * pow(10, 9)
         else: 
             return val
 
