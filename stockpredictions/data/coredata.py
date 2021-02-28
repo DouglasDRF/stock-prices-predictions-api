@@ -1,14 +1,15 @@
 import mysql.connector
+import os
 from stockpredictions.models import StockPrice
 from datetime import datetime
 
 class CoreDataRepository:
     def __init__(self):
         self.__dbConnection = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='root',
-            database='StockPricesPrediction'
+            host=os.environ['MYSQL_HOST'],
+            user=os.environ['MYSQL_USER'],
+            password=os.environ['MYSQL_PASSWORD'],
+            database=os.environ['MYSQL_DATABASE']
         )
 
     def get_ticker_source(self, ticker) -> str:
