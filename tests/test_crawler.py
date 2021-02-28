@@ -1,4 +1,5 @@
 from stockpredictions.data.crawler import StocksCrawler
+from unittest.mock import MagicMock
 
 class TestCrawler:
 
