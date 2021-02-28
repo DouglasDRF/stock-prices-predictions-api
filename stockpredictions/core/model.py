@@ -5,14 +5,14 @@ from tensorflow.keras import optimizers
 from tensorflow.keras.layers import Dense, Dropout, LSTM, Input, Activation
 from tensorflow.keras.models import Model
 
-model_file_path = '../../model.h5'
-
+model_file_path = '/model.h5'
 class StocksPredictionModel():
 
     def __init__(self, history_size=40):
 
         self.__history_size = history_size
         self.is_trained = False
+        self.__technical_indicators = []
 
         try:
             model = keras.models.load_model(model_file_path)
