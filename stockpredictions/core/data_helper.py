@@ -8,3 +8,4 @@ def load_dataset(ticker='BBDC4', path='C:\\Repositories\\StockPredictions\\datas
     except:
         print('ticker and/or datetime columns doesn\'t not exists')
     return dataset
+    

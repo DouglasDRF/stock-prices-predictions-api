@@ -1,11 +1,12 @@
 import numpy as np
+import os
 from sklearn import preprocessing
 from tensorflow import keras
 from tensorflow.keras import optimizers
 from tensorflow.keras.layers import Dense, Dropout, LSTM, Input, Activation
 from tensorflow.keras.models import Model
 
-model_file_path = '/model.h5'
+model_file_path = os.getcwd() + '/model.h5'
 class StocksPredictionModel():
 
     def __init__(self, history_size=40):
@@ -17,6 +18,7 @@ class StocksPredictionModel():
         try:
             model = keras.models.load_model(model_file_path)
             self.is_trained = True
+            print('Model is loaded and trained')
         except:
             lstm_input = keras.Input(shape=(self.__history_size, 5))
             x = LSTM(50)(lstm_input)
@@ -29,6 +31,7 @@ class StocksPredictionModel():
 
             adam = optimizers.Adam(lr=0.0005)
             model.compile(optimizer=adam, loss='mse')
+            print('Model is created and needs to be trained')
         finally:
             self.__model = model
             
@@ -37,19 +40,29 @@ class StocksPredictionModel():
     def normalize_ochlv_history(self, ochlv_history, training_mode=False):
         normalizer = preprocessing.MinMaxScaler()
         dataset_normalized = normalizer.fit_transform(ochlv_history)
-        ochlv_history_normalized = np.array([dataset_normalized[i : i + self.__history_size].copy() for i in range(len(dataset_normalized) - self.__history_size)])
-
-        next_open_values = np.array([ochlv_history.values[:,0][i + self.__history_size].copy() for i in range(len(ochlv_history) - self.__history_size)])
-        next_open_values = np.expand_dims(next_open_values, -1)
-        
-        self.__y_scaler = self.__y_scaler.fit(next_open_values)
-        assert ochlv_history_normalized.shape[0] == next_open_values.shape[0]
-        
+                
         if training_mode == False:
-            return ochlv_history_normalized
+            ochlv_history_normalized = np.array(dataset_normalized.copy())
+            
+            next_open_values = np.array(ochlv_history.values[:,0].copy())
+            next_open_values = np.expand_dims(next_open_values, -1)
+            
+            self.__y_scaler = self.__y_scaler.fit(next_open_values)
+            assert ochlv_history_normalized.shape[0] == next_open_values.shape[0]
+       
+            return ochlv_history_normalized.reshape(1, 40, 5)
         else:
+            ochlv_history_normalized = np.array([dataset_normalized[i : i + self.__history_size].copy() for i in range(len(dataset_normalized) - self.__history_size)])
+
+            next_open_values = np.array([ochlv_history.values[:,0][i + self.__history_size].copy() for i in range(len(ochlv_history) - self.__history_size)])
+            next_open_values = np.expand_dims(next_open_values, -1)
+            
+            self.__y_scaler = self.__y_scaler.fit(next_open_values)
+            assert ochlv_history_normalized.shape[0] == next_open_values.shape[0]
+
             next_open_normalized = np.array([dataset_normalized[:,0][i + self.__history_size].copy() for i in range (len(dataset_normalized) -  self.__history_size)])
             next_open_normalized = np.expand_dims(next_open_normalized, -1)
+            
             return ochlv_history_normalized, next_open_normalized, next_open_values
 
     def train(self, dataset):
