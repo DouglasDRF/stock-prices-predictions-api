@@ -22,7 +22,7 @@ class DataService:
 
     def __update(self, ticker):
         try:
-            crawler = StocksCrawler(ticker, self.__repository.get_ticker_source(ticker), daemon=True)
+            crawler = StocksCrawler(ticker, self.__repository.get_ticker_source(ticker))
             last = crawler.get_last_daily_price()
             self.__repository.save_last(last)
             print("Scheduler update task ran sucessfully")

@@ -24,9 +24,9 @@ class StocksCrawler():
     def get_last_daily_price(self):
 
         if 'br.investing' in self.__source:
-            return self.__extract_data_from_brinvesting(True)
+            return self.__extract_data_from_brinvesting(True)[0]
         else:
-            return self.__extract_data_from_infomoney(True)
+            return self.__extract_data_from_infomoney(True)[0]
 
     def get_history(self):
 
