@@ -1,7 +1,8 @@
 import mysql.connector
 import os
-from stockpredictions.models import StockPrice
+from models import StockPrice
 from datetime import datetime
+import pandas as pd
 
 class CoreDataRepository:
     def __init__(self):
@@ -30,6 +31,14 @@ class CoreDataRepository:
         cursor.executemany(query, params)
         self.__dbConnection.commit()
 
+    def save_last(self, stock_price: StockPrice):
+        query = """INSERT INTO StockPrice (Ticker, `Date`, `Open`, `Close`, High, Low, Volume) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
+        params = (stock_price.ticker, stock_price.timestamp, stock_price.open, stock_price.close, stock_price.high, stock_price.low, stock_price.volume)
+
+        cursor = self.__dbConnection.cursor()
+        cursor.execute(query, params)
+        self.__dbConnection.commit()
+
     def get_history(self, ticker, limit=40) -> list:
         query = """SELECT * FROM StockPrice WHERE Ticker = %s ORDER BY `Date` DESC LIMIT %s;"""
         params = (ticker, limit)
@@ -44,3 +53,7 @@ class CoreDataRepository:
             final_result.append(StockPrice(r[1], r[2], r[3], r[4], r[5], r[6], str(r[7])))
         
         return final_result
+    def get_history_dataframe(self, history):
+        df = pd.DataFrame([x.to_dict() for x in history])
+        data =  df.drop(columns=['ticker', 'timestamp'])
+        return data
