@@ -36,6 +36,6 @@ deploy:
   secret_access_key: $AWS_SECRET_KEY
 
   region: "sa-east-1"
+  env: "stockprices-prediction"
   app: "stockprices-prediction"
-  env: "stockprices-predction"
   bucket_name: "elastick-beanstalk"
