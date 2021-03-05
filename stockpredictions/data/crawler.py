@@ -2,7 +2,7 @@ import requests
 import os
 import datetime
 
-from models.stock_price import StockPrice
+from stockpredictions.models import StockPrice
 from selenium.webdriver import Firefox, ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC

@@ -7,6 +7,8 @@ class DataService:
     def __init__(self):
         self.__repository = CoreDataRepository()
 
+    def get_supported_stocks(self):
+        return  self.__repository.get_supported_stocks() 
     
     def update(self, ticker):
         t = threading.Thread(target=self.__update, args=(ticker,))
