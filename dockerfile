@@ -4,6 +4,7 @@ EXPOSE 8000
 
 WORKDIR /app
 COPY requirements.txt requirements.txt
+COPY setup.py setup.py
 
 RUN apt-get update
 RUN apt-get install software-properties-common -y
@@ -20,6 +21,7 @@ RUN chmod +x geckodriver
 RUN mv geckodriver /usr/local/bin/
 
 RUN pip3 install -r requirements.txt
+RUN pip3 install -e .
 
 COPY ./stockpredictions .
 

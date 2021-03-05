@@ -1,4 +1,6 @@
-from stockpredictions.data.crawler import StocksCrawler
+#!/usr/bin/python3
+
+from stockpredictions.data import StocksCrawler
 from unittest.mock import MagicMock
 
 class TestCrawler:
@@ -59,4 +61,4 @@ class TestCrawler:
         assert result[0].close != 0.0
         assert result[0].high != 0.0
         assert result[0].low != 0.0
-        assert result[0].low != 0         
+        assert result[0].low != 0    

@@ -2,12 +2,11 @@ from datetime import datetime
 import pandas as pd
 import re
 
-
 class StockPrice():
 
     def __init__(self, ticker='', timestamp=datetime.now(), opn=0, close=0, high=0, low=0, volume=''):
         self.ticker = ticker
-        self.timestamp = timestamp.isoformat()
+        self.timestamp = timestamp.isoformat() if type(timestamp) is datetime else timestamp
         self.open = float(opn)
         self.close = float(close)
         self.high = float(high)

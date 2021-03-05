@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  stockpredictions:
+    build: .
+    ports: 
+      - "8000:8000"
+    environment: 
+      - MYSQL_HOST=stockpredictions-database
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_DATABASE=StockPricesPrediction
+    depends_on: 
+      - stockpredictions-database
+  
+  stockpredictions-database:
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment: 
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+       - "mysql-volume:/var/lib/mysql"
+
+volumes:
+  mysql-volume:
+  
+
+  

@@ -25,10 +25,12 @@ DROP TABLE IF EXISTS PredictionHistories;
 CREATE TABLE PredictionHistories(
 	Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
 	Ticker CHAR(6) NOT NULL, 
-	`Open` DOUBLE NOT NULL,
-	RealOpen DOUBLE NOT NULL,
-	PredictionType INT NULL,
-	`Timestamp` TIMESTAMP NOT NULL
+	NextPredictedValue DOUBLE NOT NULL,
+	RealValue DOUBLE,
+	PredictionType VARCHAR(4) NULL,
+	Direction VARCHAR(4) NOT NULL,
+	RealDirection VARCHAR(4),
+	`Date` DATE NOT NULL
 );
 
 CREATE UNIQUE INDEX idx_b3code ON SupportedCompaniesToCrawler (B3Code);
@@ -38,4 +40,15 @@ CREATE INDEX idx_timestamp ON StockPrice (`Date`);
 CREATE UNIQUE INDEX uk_ticker_timestamp ON StockPrice (Ticker, `Date`);
 
 CREATE INDEX idx_ticker ON PredictionHistories (Ticker);
-CREATE INDEX idx_timestamp ON PredictionHistories (`Timestamp`);
+CREATE INDEX idx_date ON PredictionHistories (`Date`);
+CREATE UNIQUE INDEX uk_date_ticker ON PredictionHistories (`Date`, Ticker);
+
+DROP TABLE IF EXISTS TrainingLog;
+CREATE TABLE TrainingLog(
+	Id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    PreviousTrainingId INT,
+    TrainingDate TIMESTAMP NOT NULL,
+    DatasetSamplesCount INT NOT NULL,
+    Accuracy DOUBLE NOT NULL,
+    KerasModelSerialized BLOB NOT NULL
+)
