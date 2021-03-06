@@ -15,6 +15,7 @@ dbConnection = mysql.connector.connect(
 
 cursor = dbConnection.cursor()
 cursor.execute("CREATE DATABASE IF NOT EXISTS StockPricesPrediction;")
+dbConnection.commit()
 cursor.close()
 dbConnection.close()
 
