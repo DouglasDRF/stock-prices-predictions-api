@@ -5,7 +5,7 @@ python:
 jobs:
   
   allow_failures:
-    - pytest
+    - map(pytest)
 
   fast_finish: true
 
@@ -51,8 +51,9 @@ jobs:
       - docker tag stockpredictions-api stockpredictions-api
       
   - stage: Test Docker Image
-    script: docker run --rm -e MYSQL_ROOT_PASSWORD=root -d mysql
-    script: docker run --rm -e MYSQL_HOST=localhost -e MYSQL_USER=root -e MYSQL_PASSWORD=root -e MYSQL_DATABASE=StockPricesPrediction stockpredictions-api cat hello.txt
+    script: 
+      - docker run --rm -e MYSQL_ROOT_PASSWORD=root -d mysql
+      - docker run --rm -e MYSQL_HOST=localhost -e MYSQL_USER=root -e MYSQL_PASSWORD=root -e MYSQL_DATABASE=StockPricesPrediction stockpredictions-api cat hello.txt
   
   - stage: Build and Push Docker Image
     branches:
