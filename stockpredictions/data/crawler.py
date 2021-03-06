@@ -12,14 +12,15 @@ from bs4 import BeautifulSoup
 
 
 class StocksCrawler():
-    def __init__(self, ticker='PETR4', source='https://br.investing.com/equities/petrobras-pn-historical-data'):
+    def __init__(self, ticker='PETR4', source='https://br.investing.com/equities/petrobras-pn-historical-data', mock_for_tests=False):
 
         self.__source = source
         self.__ticker = ticker
         self.__expected_data = None
         self.__soup = None
 
-        self.__init_webdrive()
+        if mock_for_tests == False:
+            self.__init_webdrive()
 
     def get_last_daily_price(self):
 
