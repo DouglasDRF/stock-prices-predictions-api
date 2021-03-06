@@ -13,7 +13,9 @@ class TestCrawler:
         assert result.close != 0.0
         assert result.high != 0.0
         assert result.low != 0.0
-        assert result.low != 0 
+        assert result.low != 0
+
+        del(crawler) 
         
 
     def test_get_history_infomoney(self):
@@ -29,6 +31,8 @@ class TestCrawler:
         assert result[0].high != 0.0
         assert result[0].low != 0.0
         assert result[0].low != 0 
+
+        del(crawler) 
     
     def test_get_last_price_brinvesting(self):
 
@@ -41,6 +45,8 @@ class TestCrawler:
         assert result.high != 0.0
         assert result.low != 0.0
         assert result.low != 0 
+
+        del(crawler) 
         
 
     def test_get_history_brinvesting(self):
@@ -55,4 +61,6 @@ class TestCrawler:
         assert result[0].close != 0.0
         assert result[0].high != 0.0
         assert result[0].low != 0.0
-        assert result[0].low != 0    
+        assert result[0].low != 0  
+
+        del(crawler)   
