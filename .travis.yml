@@ -31,11 +31,11 @@ install:
 script: pytest
 
 deploy:
-  provider: elasticbeanstalk
-  access_key_id: $AWS_KEY_ID
-  secret_access_key: $AWS_SECRET_KEY
+  provider: azure_web_apps
+  username: $AZURE_WA_USERNAME      
+  password: $AZURE_WA_PASSWORD   
+  site: stockprices-predictions     
+  on: master
 
-  region: "sa-east-1"
-  env: "stockprices-prediction"
-  app: "stockprices-prediction"
-  bucket_name: "elastick-beanstalk"
+after_deploy:
+  - ./install-dependencies.sh
