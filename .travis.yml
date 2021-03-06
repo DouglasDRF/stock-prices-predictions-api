@@ -3,6 +3,10 @@ python:
   - "3.8"
 
 jobs:
+  
+  allow_failures:
+    - pytest
+
   fast_finish: true
 
   include:
@@ -33,9 +37,6 @@ jobs:
 
     install:
       - pip3 install -r requirements.txt
-
-    allow_failures:
-        - pytest
 
     script: pytest
 
