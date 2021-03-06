@@ -29,13 +29,3 @@ install:
   - pip3 install -r requirements.txt
 
 script: pytest
-
-deploy:
-  provider: elasticbeanstalk
-  access_key_id: $AWS_KEY_ID
-  secret_access_key: $AWS_SECRET_KEY
-
-  region: "sa-east-1"
-  env: "stockprices-prediction"
-  app: "stockprices-prediction"
-  bucket_name: "elastick-beanstalk"
