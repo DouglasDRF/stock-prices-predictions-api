@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 from stockpredictions.data import StocksCrawler
 from unittest.mock import MagicMock
 

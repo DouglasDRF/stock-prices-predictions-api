@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from services import DataService
+from stockpredictions.services import DataService
 
 data_router = APIRouter()
 data_service = DataService()

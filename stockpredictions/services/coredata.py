@@ -1,5 +1,5 @@
-from data import CoreDataRepository
-from data import StocksCrawler
+from stockpredictions.data import CoreDataRepository
+from stockpredictions.data import StocksCrawler
 import threading
 
 class DataService:

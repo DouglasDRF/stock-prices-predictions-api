@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from core.consts import PredictionType, Direction
-from models import Predicted
-from core.model import StocksPredictionModel 
-from data import StocksCrawler, CoreDataRepository, StatisticsRepository
+from stockpredictions.core.consts import PredictionType, Direction
+from stockpredictions.models import Predicted
+from stockpredictions.core.model import StocksPredictionModel 
+from stockpredictions.data import StocksCrawler, CoreDataRepository, StatisticsRepository
 import datetime as dt
 
 

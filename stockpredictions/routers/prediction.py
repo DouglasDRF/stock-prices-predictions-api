@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from services import PredictionService
+from stockpredictions.services import PredictionService
 
 
 prediction_router = APIRouter()
