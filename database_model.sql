@@ -9,6 +9,8 @@ CREATE TABLE SupportedCompaniesToCrawler(
     SourceEndpoint VARCHAR(1024)
 );
 
+CREATE UNIQUE INDEX idx_b3code ON SupportedCompaniesToCrawler (B3Code);
+
 DROP TABLE IF EXISTS StockPrice;
 CREATE TABLE StockPrice(
 	Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL, 
@@ -21,6 +23,11 @@ CREATE TABLE StockPrice(
 	Volume DOUBLE NOT NULL
 );
 
+
+CREATE INDEX idx_b3code ON StockPrice (Ticker);
+CREATE INDEX idx_timestamp ON StockPrice (`Date`);
+CREATE UNIQUE INDEX uk_ticker_timestamp ON StockPrice (Ticker, `Date`);
+
 DROP TABLE IF EXISTS PredictionHistories;
 CREATE TABLE PredictionHistories(
 	Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -32,12 +39,6 @@ CREATE TABLE PredictionHistories(
 	RealDirection VARCHAR(4),
 	`Date` DATE NOT NULL
 );
-
-CREATE UNIQUE INDEX idx_b3code ON SupportedCompaniesToCrawler (B3Code);
-
-CREATE INDEX idx_b3code ON StockPrice (Ticker);
-CREATE INDEX idx_timestamp ON StockPrice (`Date`);
-CREATE UNIQUE INDEX uk_ticker_timestamp ON StockPrice (Ticker, `Date`);
 
 CREATE INDEX idx_ticker ON PredictionHistories (Ticker);
 CREATE INDEX idx_date ON PredictionHistories (`Date`);

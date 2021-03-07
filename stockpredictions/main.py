@@ -4,21 +4,6 @@ import uvicorn
 from stockpredictions.routers import prediction_router
 from stockpredictions.routers import data_router
 
-import mysql.connector
-import os
-
-dbConnection = mysql.connector.connect(
-            host=os.environ['MYSQL_HOST'],
-            user=os.environ['MYSQL_USER'],
-            password=os.environ['MYSQL_PASSWORD']
-            )
-
-cursor = dbConnection.cursor()
-cursor.execute("CREATE DATABASE IF NOT EXISTS StockPricesPrediction;")
-dbConnection.commit()
-cursor.close()
-dbConnection.close()
-
 app=FastAPI()
 app.description='Stock Prices Predcition API'
 app.include_router(prediction_router)
