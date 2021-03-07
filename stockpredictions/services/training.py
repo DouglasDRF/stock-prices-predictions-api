@@ -21,8 +21,9 @@ class TrainingService:
         t.start()
         return { "status_message": "train task has been scheduled"}
 
-    def get_status(self, ticker: str):
-        return { "ModelIsTrained": self.__model.is_trained, "CurrentAccuracy": self.__model.current_accuracy }
+    def get_status(self):
+        # return { "is_model_trained": self.__model.is_trained, "current_accuracy": self.__model.current_accuracy }
+        return { "is_model_trained": self.__model.is_trained }
 
     def __train_task(self, ticker):
         try:

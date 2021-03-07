@@ -61,33 +61,28 @@ class StocksPredictionModel():
 
             return ochlv_history_normalized.reshape(1, 40, 5)
         else:
-            ochlv_history_normalized = np.array([dataset_normalized[i: i + self.__history_size].copy(
-            ) for i in range(len(dataset_normalized) - self.__history_size)])
+            ochlv_history_normalized = np.array([dataset_normalized[i: i + self.__history_size].copy() for i in range(len(dataset_normalized) - self.__history_size)])
 
-            next_open_values = np.array([ochlv_history.values[:, 0][i + self.__history_size].copy()
-                                         for i in range(len(ochlv_history) - self.__history_size)])
+            next_open_values = np.array([ochlv_history.values[:, 0][i + self.__history_size].copy()for i in range(len(ochlv_history) - self.__history_size)])
             next_open_values = np.expand_dims(next_open_values, -1)
 
             self.__y_scaler = self.__y_scaler.fit(next_open_values)
             assert ochlv_history_normalized.shape[0] == next_open_values.shape[0]
 
-            next_open_normalized = np.array([dataset_normalized[:, 0][i + self.__history_size].copy()
-                                             for i in range(len(dataset_normalized) - self.__history_size)])
+            next_open_normalized = np.array([dataset_normalized[:, 0][i + self.__history_size].copy()for i in range(len(dataset_normalized) - self.__history_size)])
             next_open_normalized = np.expand_dims(next_open_normalized, -1)
 
             return ochlv_history_normalized, next_open_normalized, next_open_values
 
     def train(self, dataset, save=False):
-        ochlv_history_normalized, next_open_normalized, next_open_values = self.normalize_ochlv_history(
-            dataset, True)
+        ochlv_history_normalized, next_open_normalized, next_open_values = self.normalize_ochlv_history(dataset, True)
         X_train, y_train, X_test, y_test = self.__split_train_test(ochlv_history_normalized, next_open_normalized)
 
         self.__model.fit(x=X_train, y=y_train, batch_size=64,epochs=50, shuffle=True, validation_split=0.1)
         evaluation = self.__model.evaluate(X_test, y_test)
         print(f'Normalized MSE: {evaluation}')
 
-        self.current_accuracy = 100 - \
-            self.__eval(X_test, next_open_values[self.__test_n:], ochlv_history_normalized)
+        self.current_accuracy = 100 - self.__eval(X_test, next_open_values[self.__test_n:], ochlv_history_normalized)
 
         if save == True:
             file_model_name = 'model-' + dt.datetime.now().isoformat().replace(':', '-') + '.h5'
@@ -112,6 +107,7 @@ class StocksPredictionModel():
         assert y_unscaled.shape == y_test_predicted.shape
 
         print(f'Real Root Mean Squared: {scaled_mse}%')
+        self.__current_accuracy = scaled_mse
         return scaled_mse
 
     def __split_train_test(self, ochlv_history_normalized, next_open_normalized, split_ratio=0.9):
@@ -136,5 +132,5 @@ def get_trained_models():
 last_model = models_path + get_trained_models()[-1] if len(get_trained_models()) else ''
 __static_model_instance = StocksPredictionModel()
 
-def get_model_instance():
+def get_model_instance() -> StocksPredictionModel:
     return __static_model_instance
