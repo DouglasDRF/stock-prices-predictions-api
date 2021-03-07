@@ -51,5 +51,7 @@ CREATE TABLE TrainingLog(
     TrainingDate TIMESTAMP NOT NULL,
     DatasetSamplesCount INT NOT NULL,
     Accuracy DOUBLE NOT NULL,
-    KerasModelSerialized BLOB NOT NULL
+    ModelFileName VARCHAR(64) NOT NULL
 )
+
+S
