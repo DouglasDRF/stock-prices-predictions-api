@@ -12,16 +12,7 @@ services:
       - MYSQL_DATABASE=StockPricesPrediction
     depends_on: 
       - stockpredictions-database
-  
-  stockpredictions-database:
-    image: mysql
-    environment: 
-      - MYSQL_ROOT_PASSWORD=root
-    volumes:
-       - "mysql-volume:/var/lib/mysql"
 
-volumes:
-  mysql-volume:
   
 
   
