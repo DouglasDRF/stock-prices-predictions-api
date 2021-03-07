@@ -8,6 +8,11 @@ from tensorflow.keras import optimizers
 from tensorflow.keras.layers import Dense, Dropout, LSTM, Input, Activation
 from tensorflow.keras.models import Model
 
+try:
+    physical_devices = tf.config.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+except:
+    pass
 
 class StocksPredictionModel():
 
@@ -122,14 +127,8 @@ class StocksPredictionModel():
         return history_train, y_train, history_test, y_test
 
 
-# config = tf.compat.v1.ConfigProto()
-# config.gpu_options.per_process_gpu_memory_fraction = 0.5
-# session = tf.compat.v1.Session(config=config)
-
-physical_devices = tf.config.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(physical_devices[0], True)
-
-models_path = os.getcwd() + '\\trained_models\\'
+models_path = os.getcwd() 
+models_path = models_path + ('\\trained_models\\' if '\\' in models_path else '/trained_models/')
 
 def get_trained_models(): 
     return os.listdir(models_path)
