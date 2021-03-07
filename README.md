@@ -8,7 +8,7 @@
 Disclaimer: This is not an investment suggestion. This is and experimental tool with reseach purposes.
 
 API with Stock Prices Predictions 1d for helping on Swing Trade using LSTM Deep Learning Algorithm.
-Currently, it only supports few Bovespa stocks. There's a crawler instead an API that most of them are paid, and the supported websites are InfoMoneya and BR Investing.
+Currently, it only supports few Bovespa stocks. There's a crawler instead an API that most of them are paid, and the supported websites are InfoMoney and BR Investing.
 You should insert on table `SupportedCompaniesToCrawler` the ticker symbol and its page to crawl the data.
 
 This application requires a MySQL database that should be provided before the application startup. The script for the schemas model it's on file database_mode.sql
