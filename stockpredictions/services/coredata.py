@@ -27,7 +27,7 @@ class DataService:
             self.__repository.save_last(last)
             print("Scheduler update task ran sucessfully")
         except Exception as e:
-            print("Scheduled update task ran with error: \n" + e)
+            print("Scheduled update task ran with error: \n" + str(e))
 
     def __fillTask(self, ticker):
         try:

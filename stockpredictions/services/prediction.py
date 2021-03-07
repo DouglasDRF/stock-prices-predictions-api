@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from stockpredictions.core.consts import PredictionType, Direction
 from stockpredictions.models import Predicted
-from stockpredictions.core.model import StocksPredictionModel 
+from stockpredictions.core.model import get_model_instance
 from stockpredictions.data import StocksCrawler, CoreDataRepository, StatisticsRepository
 import datetime as dt
 
@@ -11,7 +11,7 @@ import datetime as dt
 class PredictionService:
 
     def __init__(self):
-        self.__model = StocksPredictionModel()
+        self.__model = get_model_instance()
         self.__core_repository = CoreDataRepository()
         self.__stats_repository = StatisticsRepository()
 
