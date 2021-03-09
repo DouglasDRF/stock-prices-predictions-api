@@ -52,6 +52,5 @@ CREATE TABLE TrainingLog(
     DatasetSamplesCount INT NOT NULL,
     Accuracy DOUBLE NOT NULL,
     ModelFileName VARCHAR(64) NOT NULL
-)
+);
 
-S

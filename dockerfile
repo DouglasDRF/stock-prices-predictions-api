@@ -30,4 +30,4 @@ ENV MYSQL_USER=""
 ENV MYSQL_PASSWORD=""
 ENV MYSQL_DATABASE=""
 
-CMD [ "python3", "-m" , "uvicorn", "stockpredictions.main:app"]
+CMD ["uvicorn", "stockpredictions.main:app", "--host", "0.0.0.0", "--port", "8000"]
