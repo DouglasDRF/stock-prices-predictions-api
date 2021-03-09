@@ -53,26 +53,26 @@ class StocksPredictionModel():
         if training_mode == False:
             ochlv_history_normalized = np.array(dataset_normalized.copy())
 
-            next_open_values = np.array(ochlv_history.values[:, 0].copy())
-            next_open_values = np.expand_dims(next_open_values, -1)
-
-            self.__y_scaler = self.__y_scaler.fit(next_open_values)
-            assert ochlv_history_normalized.shape[0] == next_open_values.shape[0]
+            next_day_values = np.array(ochlv_history.values[:, 1].copy())
+            next_day_values = np.expand_dims(next_day_values, -1)
+            
+            self.__y_scaler = self.__y_scaler.fit(next_day_values)
+            assert ochlv_history_normalized.shape[0] == next_day_values.shape[0]
 
             return ochlv_history_normalized.reshape(1, 40, 5)
         else:
             ochlv_history_normalized = np.array([dataset_normalized[i: i + self.__history_size].copy() for i in range(len(dataset_normalized) - self.__history_size)])
 
-            next_open_values = np.array([ochlv_history.values[:, 0][i + self.__history_size].copy()for i in range(len(ochlv_history) - self.__history_size)])
-            next_open_values = np.expand_dims(next_open_values, -1)
+            next_day_values = np.array([ochlv_history.values[:, 1][i + self.__history_size].copy()for i in range(len(ochlv_history) - self.__history_size)])
+            next_day_values = np.expand_dims(next_day_values, -1)
 
-            self.__y_scaler = self.__y_scaler.fit(next_open_values)
-            assert ochlv_history_normalized.shape[0] == next_open_values.shape[0]
+            self.__y_scaler = self.__y_scaler.fit(next_day_values)
+            assert ochlv_history_normalized.shape[0] == next_day_values.shape[0]
 
-            next_open_normalized = np.array([dataset_normalized[:, 0][i + self.__history_size].copy()for i in range(len(dataset_normalized) - self.__history_size)])
-            next_open_normalized = np.expand_dims(next_open_normalized, -1)
+            next_day_normalized = np.array([dataset_normalized[:, 1][i + self.__history_size].copy()for i in range(len(dataset_normalized) - self.__history_size)])
+            next_day_normalized = np.expand_dims(next_day_normalized, -1)
 
-            return ochlv_history_normalized, next_open_normalized, next_open_values
+            return ochlv_history_normalized, next_day_normalized, next_day_values
 
     def train(self, dataset, save=False):
         ochlv_history_normalized, next_open_normalized, next_open_values = self.normalize_ochlv_history(dataset, True)

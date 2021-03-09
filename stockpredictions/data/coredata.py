@@ -66,6 +66,7 @@ class CoreDataRepository:
         for r in result:
             final_result.append(StockPrice(r[1], r[2], r[3], r[4], r[5], r[6], str(r[7])))
 
+        final_result.reverse()
         return final_result
 
     def get_history_dataframe(self, history):

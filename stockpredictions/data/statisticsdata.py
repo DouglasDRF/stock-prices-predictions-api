@@ -14,8 +14,8 @@ class StatisticsRepository:
         )
 
     def save_prediction(self, prediction):
-        query = """INSERT INTO PredictionHistories (Ticker, NextPredictedValue, PredictionType, Direction, `Date`) VALUES (%s, %s, %s, %s, %s);"""
-        params = (prediction.ticker[0], prediction.next_predicted_value[0], prediction.prediction_type[0], prediction.direction[0], prediction.date)
+        query = """INSERT INTO PredictionHistories (Ticker, PreviousReference, NextPredictedValue, PredictionType, Direction, `Date`) VALUES (%s, %s, %s, %s, %s, %s);"""
+        params = (prediction.ticker[0], prediction.previous[0], prediction.next_predicted_value[0], prediction.prediction_type[0], prediction.direction[0], prediction.date)
         cursor = self.__dbConnection.cursor()
         cursor.execute(query, params)
         self.__dbConnection.commit()

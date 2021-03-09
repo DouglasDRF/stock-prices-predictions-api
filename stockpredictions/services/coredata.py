@@ -11,7 +11,7 @@ class DataService:
         return  self.__repository.get_supported_stocks() 
     
     def update(self, ticker):
-        t = threading.Thread(target=self.__update, args=(ticker,), daemon=True)
+        t = threading.Thread(target=self.__update, args=(ticker,))
         t.start()
         return { "status_message": "Update database task has been scheduled"}
 
@@ -22,19 +22,20 @@ class DataService:
 
     def __update(self, ticker):
         try:
-            crawler = StocksCrawler(ticker, self.__repository.get_ticker_source(ticker))
-            last = crawler.get_last_daily_price()
-            self.__repository.save_last(last)
-            print("Scheduler update task ran sucessfully")
+            with StocksCrawler(ticker, self.__repository.get_ticker_source(ticker)) as crawler:
+                last = crawler.get_last_daily_price()
+                self.__repository.save_last(last)
+                print("Scheduler update task ran sucessfully")
         except Exception as e:
             print("Scheduled update task ran with error: \n" + str(e))
 
     def __fillTask(self, ticker):
         try:
-            crawler = StocksCrawler(ticker, self.__repository.get_ticker_source(ticker))
-            history = crawler.get_history()
-            self.__repository.save_to_history(history)
-            print("Scheduler fill history task ran sucessfully")
+            print('Initiating fiiling task')
+            with StocksCrawler(ticker, self.__repository.get_ticker_source(ticker)) as crawler:
+                history = crawler.get_history()
+                self.__repository.save_to_history(history)
+                print("Scheduler fill history task ran sucessfully")
         except Exception as e:
             print("Scheduled fill history task ran with error: \n" + str(e))
         

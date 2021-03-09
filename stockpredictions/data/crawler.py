@@ -18,9 +18,15 @@ class StocksCrawler():
         self.__ticker = ticker
         self.__expected_data = None
         self.__soup = None
-
+        print('Initiating crawling...')
         if mock_for_tests == False:
             self.__init_webdrive()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        pass
 
     def get_last_daily_price(self):
 
@@ -79,6 +85,7 @@ class StocksCrawler():
     def __init_webdrive(self):
         opts = Options()
         opts.headless = True
+        print('Opening headless browser...')
         driver = Firefox(options=opts)
 
         driver.get(self.__source)
