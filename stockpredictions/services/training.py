@@ -7,8 +7,7 @@ from stockpredictions.core.model import get_model_instance
 from stockpredictions.core.data_helper import load_dataset
 from stockpredictions.data import TrainingLogRepository
 import datetime as dt
-import threading
-
+import asyncio
 
 class TrainingService:
 
@@ -17,15 +16,14 @@ class TrainingService:
         self.__model = get_model_instance()
 
     def train(self, ticker: str):
-        t = threading.Thread(target=self.__train_task, args=(ticker,), daemon=True)
-        t.start()
+        t = asyncio.create_task(self.__train_task(ticker))
         return { "status_message": "train task has been scheduled"}
 
     def get_status(self):
         # return { "is_model_trained": self.__model.is_trained, "current_accuracy": self.__model.current_accuracy }
         return { "is_model_trained": self.__model.is_trained }
 
-    def __train_task(self, ticker):
+    async def __train_task(self, ticker):
         try:
             dataset = load_dataset(ticker)
             model_saved = self.__model.train(dataset, True)

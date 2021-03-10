@@ -13,7 +13,7 @@ HISTORY_DAYS = 40
 TICKER = 'ITUB4'
 
 # %% 
-raw_dataframe = pd.read_csv('../../../datasets/b3_stocks_1994_2020.csv')
+raw_dataframe = pd.read_csv('C:/Repositories/StockPricePredictions/datasets/b3_stocks_1994_2020.csv')
 dataset = raw_dataframe[raw_dataframe.ticker == TICKER]
 dataset = dataset.drop(columns=["ticker", "datetime"])
  
@@ -23,16 +23,16 @@ normalizer = preprocessing.MinMaxScaler()
 dataset_normalized = normalizer.fit_transform(dataset)
 history_normalized = np.array([dataset_normalized[i : i + HISTORY_DAYS].copy() for i in range(len(dataset_normalized) - HISTORY_DAYS)])
 
-next_open_normalized = np.array([dataset_normalized[:,0][i + HISTORY_DAYS].copy() for i in range (len(dataset_normalized) - HISTORY_DAYS)])
-next_open_normalized = np.expand_dims(next_open_normalized, -1)
+next_day_normalized = np.array([dataset_normalized[:,1][i + HISTORY_DAYS].copy() for i in range (len(dataset_normalized) - HISTORY_DAYS)])
+next_day_normalized = np.expand_dims(next_day_normalized, -1)
 
-next_open_values = np.array([dataset.values[:,0][i + HISTORY_DAYS].copy() for i in range(len(dataset) - HISTORY_DAYS)])
-next_open_values = np.expand_dims(next_open_values, -1)
+next_day_values = np.array([dataset.values[:,1][i + HISTORY_DAYS].copy() for i in range(len(dataset) - HISTORY_DAYS)])
+next_day_values = np.expand_dims(next_day_values, -1)
 
 y_normalizer = preprocessing.MinMaxScaler()
-y_scaler = y_normalizer.fit(next_open_values)
+y_scaler = y_normalizer.fit(next_day_values)
 
-assert history_normalized.shape[0] == next_open_values.shape[0]
+assert history_normalized.shape[0] == next_day_values.shape[0]
 
 # Train-Test Split
 # %%
@@ -40,12 +40,12 @@ TEST_SPLIT = 0.9
 TEST_N = int(history_normalized.shape[0] * TEST_SPLIT)
 
 history_train = history_normalized[:TEST_N]
-y_train = next_open_normalized[:TEST_N]
+y_train = next_day_normalized[:TEST_N]
 
 history_test = history_normalized[TEST_N:]
-y_test = next_open_normalized[TEST_N:]
+y_test = next_day_normalized[TEST_N:]
 
-unscaled_y = next_open_values[TEST_N:]
+unscaled_y = next_day_values[TEST_N:]
 
 # Model
 # %%
@@ -89,7 +89,7 @@ plt.legend(['Real', 'Predicted'])
 plt.show()
 
 # %%
-plt.plot(next_open_values[0:-1], scalex=True, label='real')
+plt.plot(next_day_values[0:-1], scalex=True, label='real')
 plt.plot(y_predicted[0:-1], scalex=True, label='predicted')
 plt.legend(['Real', 'Predicted'])
 # %%

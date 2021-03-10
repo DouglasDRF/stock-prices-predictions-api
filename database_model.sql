@@ -32,9 +32,10 @@ DROP TABLE IF EXISTS PredictionHistories;
 CREATE TABLE PredictionHistories(
 	Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
 	Ticker CHAR(6) NOT NULL, 
+	PreviousReference DOUBLE NOT NULL,
 	NextPredictedValue DOUBLE NOT NULL,
 	RealValue DOUBLE,
-	PredictionType VARCHAR(4) NULL,
+	PredictionType VARCHAR(5) NULL,
 	Direction VARCHAR(4) NOT NULL,
 	RealDirection VARCHAR(4),
 	`Date` DATE NOT NULL
@@ -52,6 +53,5 @@ CREATE TABLE TrainingLog(
     DatasetSamplesCount INT NOT NULL,
     Accuracy DOUBLE NOT NULL,
     ModelFileName VARCHAR(64) NOT NULL
-)
+);
 
-S

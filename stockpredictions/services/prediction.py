@@ -22,9 +22,12 @@ class PredictionService:
         ochlv_normalized = self.__model.normalize_ochlv_history(df_history)
         price_predicted = self.__model.predict(ochlv_normalized).item(0)
 
-        direction = Direction.up if price_predicted > history[0].open else Direction.down
+        direction = Direction.up if price_predicted > history[-1].close else Direction.down
         try:
-            self.__stats_repository.save_prediction(Predicted(ticker, price_predicted, PredictionType.opn, direction, dt.datetime.now().isoformat()))
+            self.__stats_repository.save_prediction(Predicted(ticker, history[-1].close, price_predicted, PredictionType.close, direction,
+             dt.datetime.now().isoformat()))
+        except Exception as e:
+            print(str(e))
         finally:
             return price_predicted
 
