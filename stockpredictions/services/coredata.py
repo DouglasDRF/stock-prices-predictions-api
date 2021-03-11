@@ -1,39 +1,26 @@
-from stockpredictions.data import CoreDataRepository
-from stockpredictions.data import StocksCrawler
-import asyncio
+from stockpredictions.data.repositories import CoreDataRepository
+from stockpredictions.data.svcagents import YahooFinanceApiSvcAgent
 
 class DataService:
 
-    def __init__(self):
-        self.__repository = CoreDataRepository()
+    def __init__(self, repository=CoreDataRepository(), apiData=YahooFinanceApiSvcAgent()):
+        self.__repository = repository
+        self.__apiData = apiData
 
     def get_supported_stocks(self):
-        return  self.__repository.get_supported_stocks() 
-    
-    def update(self, ticker):
-        t = asyncio.create_task(self.__update(ticker))
-        return { "status_message": "Update database task has been scheduled"}
+        return self.__repository.get_supported_stocks()
+
+    def save_last(self, ticker):
+        last = self.__apiData.get_last_updated_value(ticker)
+        self.__repository.save_last(last)
+        return {"status_message": "Last StockPrice has been inserted to database", "last_stock_price": last}
+
+    def update_last(self, ticker):
+        last = self.__apiData.get_last_updated_value(ticker)
+        self.__repository.update_last(last)
+        return {"status_message": "Last StockPrice has been updated in database", "last_stock_price": last}
 
     def fill_history(self, ticker):
-        t = asyncio.create_task(self.__fillTask(ticker))
-        return { "status_message": "Fill history task has been scheduled"}
-
-    async def __update(self, ticker):
-        try:
-            with StocksCrawler(ticker, self.__repository.get_ticker_source(ticker)) as crawler:
-                last = crawler.get_last_daily_price()
-                self.__repository.save_last(last)
-                print("Scheduler update task ran sucessfully")
-        except Exception as e:
-            print("Scheduled update task ran with error: \n" + str(e))
-
-    async def __fillTask(self, ticker):
-        try:
-            print('Initiating fiiling task')
-            with StocksCrawler(ticker, self.__repository.get_ticker_source(ticker)) as crawler:
-                history = crawler.get_history()
-                self.__repository.save_to_history(history)
-                print("Scheduler fill history task ran sucessfully")
-        except Exception as e:
-            print("Scheduled fill history task ran with error: \n" + str(e))
-        
+        history = self.__apiData.get_history_values(ticker)
+        self.__repository.save_to_history(history)
+        return {"status_message": "History has been filled"}

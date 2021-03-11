@@ -4,16 +4,15 @@ import matplotlib.pyplot as plt
 from stockpredictions.core.consts import PredictionType, Direction
 from stockpredictions.models import Predicted
 from stockpredictions.core.model import get_model_instance
-from stockpredictions.data import StocksCrawler, CoreDataRepository, StatisticsRepository
+from stockpredictions.data.repositories import CoreDataRepository, StatisticsRepository
 import datetime as dt
-
 
 class PredictionService:
 
-    def __init__(self):
+    def __init__(self, core_repository=CoreDataRepository(), stats_repository=StatisticsRepository()):
         self.__model = get_model_instance()
-        self.__core_repository = CoreDataRepository()
-        self.__stats_repository = StatisticsRepository()
+        self.__core_repository = core_repository
+        self.__stats_repository = stats_repository
 
     def predict_next_day(self, ticker: str):
         history = self.__core_repository.get_history(ticker)

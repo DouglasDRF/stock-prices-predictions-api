@@ -28,8 +28,8 @@ CREATE INDEX idx_b3code ON StockPrice (Ticker);
 CREATE INDEX idx_timestamp ON StockPrice (`Date`);
 CREATE UNIQUE INDEX uk_ticker_timestamp ON StockPrice (Ticker, `Date`);
 
-DROP TABLE IF EXISTS PredictionHistories;
-CREATE TABLE PredictionHistories(
+DROP TABLE IF EXISTS PredictionHistory;
+CREATE TABLE PredictionHistory(
 	Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
 	Ticker CHAR(6) NOT NULL, 
 	PreviousReference DOUBLE NOT NULL,
@@ -41,9 +41,9 @@ CREATE TABLE PredictionHistories(
 	`Date` DATE NOT NULL
 );
 
-CREATE INDEX idx_ticker ON PredictionHistories (Ticker);
-CREATE INDEX idx_date ON PredictionHistories (`Date`);
-CREATE UNIQUE INDEX uk_date_ticker ON PredictionHistories (`Date`, Ticker);
+CREATE INDEX idx_ticker ON PredictionHistory (Ticker);
+CREATE INDEX idx_date ON PredictionHistory (`Date`);
+CREATE UNIQUE INDEX uk_date_ticker ON PredictionHistory (`Date`, Ticker);
 
 DROP TABLE IF EXISTS TrainingLog;
 CREATE TABLE TrainingLog(
