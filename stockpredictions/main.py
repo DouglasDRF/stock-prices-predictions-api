@@ -1,18 +1,14 @@
 
 from fastapi import FastAPI
 import uvicorn
-from stockpredictions.routers import prediction_router, data_router, training_router
-import gc
+from stockpredictions.routers import prediction_router, data_router, training_router, stats_router
 
 app=FastAPI()
 app.description='Stock Prices Predcition API'
 app.include_router(prediction_router)
 app.include_router(data_router)
 app.include_router(training_router)
-
-if not gc.isenabled():
-    gc.enable()
-    print('GC has been enabled')
+app.include_router(stats_router)
 
 @app.get("/")
 async def root():

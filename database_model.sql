@@ -2,14 +2,14 @@ DROP DATABASE IF EXISTS StockPricesPrediction;
 CREATE DATABASE StockPricesPrediction;
 USE StockPricesPrediction;
 
-DROP TABLE IF EXISTS SupportedCompaniesToCrawler;
-CREATE TABLE SupportedCompaniesToCrawler(
+DROP TABLE IF EXISTS SupportedCompanies;
+CREATE TABLE SupportedCompanies(
 	Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL, 
     B3Code CHAR(6) NOT NULL,
     SourceEndpoint VARCHAR(1024)
 );
 
-CREATE UNIQUE INDEX idx_b3code ON SupportedCompaniesToCrawler (B3Code);
+CREATE UNIQUE INDEX idx_b3code ON SupportedCompanies (B3Code);
 
 DROP TABLE IF EXISTS StockPrice;
 CREATE TABLE StockPrice(
