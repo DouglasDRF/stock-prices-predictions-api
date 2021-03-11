@@ -3,61 +3,29 @@ python:
   - "3.8"
 
 jobs:
-  
-  allow_failures:
-    - python
-
-  fast_finish: true
 
   include:
-  # - stage: Run Tests
-    
-  #   branches:
-  #     only:
-  #     - develop
-  #     - feature/ci-setup
+  - stage: Run Tests
+    install:
+      - pip3 install -r requirements.txt
 
-  #   before_install:
-  #     - sudo apt-get update
-  #     - sudo apt-get install software-properties-common -y
-  #     - sudo apt-get install gnupg2 -y
-  #     - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 3B4FE6ACC0B21F32
-  #     - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 871920D1991BC93C
-  #     - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ focal main restricted"
-  #     - sudo apt-get update
-  #     - sudo apt-get install wget -y
-  #     - sudo apt-get install firefox -y
-  #     - wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
-  #     - tar -xvzf geckodriver*
-  #     - chmod +x geckodriver
-  #     - sudo mv geckodriver /usr/local/bin/
-  #   addons:
-  #     apt:
-  #       update: true
-
-  #   install:
-  #     - pip3 install -r requirements.txt
-
-  #   script: pytest
+    script: 
+      - pwd
+      - pip3 install -e .
+      - pytest
 
   - stage: Build Docker Image
-    branches:
-      only:
-        - develop
-        - feature/ci-setup
+    if: branch != master
     script:
       - docker build -t stockpredictions-api .
       - docker images
       - docker tag stockpredictions-api stockpredictions-api
   
   - stage: Build and Push Docker Image
-    branches:
-      only:
-        - master
+    if: branch = master
     script:
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       - docker build -t stockpredictions-api .
       - docker images
       - docker tag stockpredictions-api $DOCKER_USERNAME/stockpredictions-api
       - docker push $DOCKER_USERNAME/stockpredictions-api
-
