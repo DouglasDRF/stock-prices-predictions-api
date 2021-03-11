@@ -1,4 +1,4 @@
-from stockpredictions.data.svcagents import YahooFinanceApiSvcAgent
+from stockpredictions.data.svcagents.yahoo_finance import YahooFinanceApiSvcAgent
 from unittest.mock import MagicMock
 
 class TestSvcAgent:

@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from stockpredictions.core.consts import PredictionType, Direction
 from stockpredictions.models import Predicted
 from stockpredictions.core.model import get_model_instance
-from stockpredictions.data import StocksCrawler
 from stockpredictions.data.repositories import CoreDataRepository, StatisticsRepository
 import datetime as dt
 
