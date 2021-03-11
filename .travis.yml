@@ -9,7 +9,9 @@ jobs:
     install:
       - pip3 install -r requirements.txt
 
-    script: pytest
+    script: 
+      - pwd
+      - pytest
 
   - stage: Build Docker Image
     if: branch != master
