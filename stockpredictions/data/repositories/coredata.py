@@ -14,19 +14,8 @@ class CoreDataRepository:
             database=os.environ['MYSQL_DATABASE']
         )
 
-    def get_ticker_source(self, ticker) -> str:
-        query = """SELECT SourceEndpoint FROM SupportedCompaniesToCrawler WHERE B3Code = %s;"""
-        params = (ticker,)
-        cursor = self.__dbConnection.cursor()
-
-        cursor.execute(query, params)
-        
-        result = cursor.fetchone()
-        cursor.close()
-        return result[0]
-
     def get_supported_stocks(self):
-        query = """SELECT B3Code FROM SupportedCompaniesToCrawler;"""
+        query = """SELECT B3Code FROM SupportedCompanies"""
         cursor = self.__dbConnection.cursor()
 
         cursor.execute(query)
