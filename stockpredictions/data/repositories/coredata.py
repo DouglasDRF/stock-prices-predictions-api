@@ -1,88 +1,107 @@
-import mysql.connector
-import os
-from stockpredictions.models import StockPrice
-from datetime import datetime
+import sys
 import pandas as pd
+import boto3
+from boto3.dynamodb.conditions import Key
+from datetime import datetime, timedelta
+from decimal import Decimal
+from stockpredictions.models import StockPrice
 
+dynamodb = boto3.resource('dynamodb')
 
 class CoreDataRepository:
     def __init__(self):
-        self.__dbConnection = mysql.connector.connect(
-            host=os.environ['MYSQL_HOST'],
-            user=os.environ['MYSQL_USER'],
-            password=os.environ['MYSQL_PASSWORD'],
-            database=os.environ['MYSQL_DATABASE']
-        )
+        pass
 
     def get_supported_stocks(self):
-        query = """SELECT B3Code FROM SupportedCompanies"""
-        cursor = self.__dbConnection.cursor()
-
-        cursor.execute(query)
-
-        fetch = cursor.fetchall()
-        cursor.close()
-
-        for s in fetch:
-            yield s[0]
+        table = dynamodb.Table('SupportedCompanies')
+        response = table.scan()
+        items = response['Items']
+        while 'LastEvaluatedKey' in response:
+            print(response['LastEvaluatedKey'])
+            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+            items.extend(response['Items'])
+        for x in items:
+            yield x['B3Code']
 
     def save_to_history(self, stock_prices: list):
-        query = """INSERT IGNORE INTO StockPrice (Ticker, `Date`, `Open`, `Close`, High, Low, Volume) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
-        params = []
-        for s in stock_prices:
-            params.append((s.ticker, s.timestamp, s.open,
-                           s.close, s.high, s.low, s.volume))
-
-        cursor = self.__dbConnection.cursor()
-        cursor.executemany(query, params)
-
-        self.__dbConnection.commit()
-        cursor.close()
+        table = dynamodb.Table('StockPrices')
+        with table.batch_writer() as batch:
+            for s in stock_prices:
+                batch.put_item(Item={
+                    'ticker': s.ticker,
+                    'date': s.date,
+                    'open': Decimal(str(s.open)),
+                    'close': Decimal(str(s.close)),
+                    'high': Decimal(str(s.high)),
+                    'low': Decimal(str(s.low)),
+                    'volume': s.volume
+                })
 
     def save_last(self, stock_price: StockPrice):
-        query = """INSERT INTO StockPrice (Ticker, `Date`, `Open`, `Close`, High, Low, Volume) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
-        params = (stock_price.ticker, stock_price.timestamp, stock_price.open,
-                  stock_price.close, stock_price.high, stock_price.low, stock_price.volume)
-
-        cursor = self.__dbConnection.cursor()
-        cursor.execute(query, params)
-
-        self.__dbConnection.commit()
-        cursor.close()
+        table = dynamodb.Table('StockPrices')
+        try:
+            table.put_item(Item={
+                'ticker': stock_price.ticker,
+                'date': stock_price.date,
+                'open': Decimal(str(stock_price.open)),
+                'close': Decimal(str(stock_price.close)),
+                'high': Decimal(str(stock_price.high)),
+                'low': Decimal(str(stock_price.low)),
+                'volume': stock_price.volume
+            })
+        except Exception as e:
+            print(sys.exc_info()[0])
+            raise
 
     def update_last(self, stock_price: StockPrice):
-        query = """SELECT Id FROM StockPrice WHERE Ticker = %s AND `Date` = %s"""
-        params = (stock_price.ticker, datetime.now().date().isoformat())
-        cursor = self.__dbConnection.cursor()
-        cursor.execute(query, params)
-        result = cursor.fetchone()
-
-        query = """UPDATE StockPrice SET Ticker = %s, `Date` = %s, `Open` = %s, `Close` = %s, High = %s , Low = %s, Volume = %s WHERE Id = %s """
-        params = (stock_price.ticker, stock_price.timestamp, stock_price.open,
-                  stock_price.close, stock_price.high, stock_price.low, stock_price.volume, result[0])
-        cursor.execute(query, params)
-        self.__dbConnection.commit()
-        cursor.close()
+        table = dynamodb.Table('StockPrices')
+        response = table.update_item(
+            Key={
+                'ticker': stock_price.ticker,
+                '#dt': stock_price.date
+            },
+            UpdateExpression='SET #dt = :d, #opn = :o, #cls = :c, high = :h, low = :l, volume = :v ',
+            ExpressionAttributeValues={
+                ':d': stock_price.date,
+                ':o': Decimal(str(stock_price.open)),
+                ':c': Decimal(str(stock_price.close)),
+                ':h': Decimal(str(stock_price.high)),
+                ':l': Decimal(str(stock_price.low)),
+                ':v': stock_price.volume
+            },
+            ExpressionAttributeNames={
+                '#dt': 'date',
+                '#opn': 'open',
+                '#cls': 'close'
+            },
+            ReturnValues="UPDATED_NEW"
+        )
+        return response
 
     def get_history(self, ticker, limit=40) -> list:
-        query = """SELECT * FROM StockPrice WHERE Ticker = %s ORDER BY `Date` DESC LIMIT %s;"""
-        params = (ticker, limit)
+      
+        table = dynamodb.Table('StockPrices')
+        date = datetime.today() - timedelta(days=limit * 3)
+        date = date.strftime('%Y-%m-%d')
+        response = table.query(
+            KeyConditionExpression=Key('ticker').eq(ticker) & Key('date').gt(date)
+        )
+        typedDataList = []
 
-        cursor = self.__dbConnection.cursor()
-        cursor.execute(query, params)
-        result = cursor.fetchall()
-        cursor.close()
+        for x in response['Items']:
+            typedDataList.append(StockPrice(x['ticker'], 
+            datetime.fromisoformat(x['date']),
+            x['open'],
+            x['close'],
+            x['high'], 
+            x['low'], 
+            x['volume']))
 
-        final_result = []
+        sorted_list = sorted(typedDataList, key=lambda t: datetime.strptime(t.date, '%Y-%m-%d'), reverse=True)
+        return sorted_list[:limit]
+        
 
-        for r in result:
-            final_result.append(StockPrice(
-                r[1], r[2], r[3], r[4], r[5], r[6], str(r[7])))
-
-        final_result.reverse()
-        return final_result
-
-    def get_history_dataframe(self, history):
+    def get_history_dataframe(self, history, limit=40):
         df = pd.DataFrame([x.to_dict() for x in history])
         data = df.drop(columns=['ticker', 'timestamp'])
         return data

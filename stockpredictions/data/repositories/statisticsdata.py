@@ -1,48 +1,63 @@
-import os
-import mysql.connector
+import sys
+import boto3
+from boto3.dynamodb.conditions import Key
+from decimal import Decimal
 from datetime import datetime
+from stockpredictions.models.predicted import Predicted
 
-from stockpredictions.models import StockPrice
-
+dynamodb = boto3.resource('dynamodb')
 
 class StatisticsRepository:
     def __init__(self):
-        self.__dbConnection = mysql.connector.connect(
-            host=os.environ['MYSQL_HOST'],
-            user=os.environ['MYSQL_USER'],
-            password=os.environ['MYSQL_PASSWORD'],
-            database=os.environ['MYSQL_DATABASE']
-        )
+        self.__dbConnection = None
 
-    def get_last_predicted_price(self, ticker):
-        query = """SELECT NextPredictedValue FROM PredictionHistories WHERE Ticker = %s ORDER BY `Date` DESC LIMIT 1"""
-        params = (ticker,)
-        cursor = self.__dbConnection.cursor()
-        cursor.execute(query, params)
-        result = cursor.fetchone()
-        cursor.close()
-        return result[0]
+    def get_last_predicted_price(self, ticker) -> Predicted:
+
+        table = dynamodb.Table('PredictionHistories')
+        response = table.query(
+            KeyConditionExpression=Key('ticker').eq(ticker)
+        )
+        typedList = []
+        for x in response['Items']:
+            typedList.append(Predicted(x['ticker'], x['previous'], x['predicted_value'], x['prediction_type'], x['direction'], x['date']))
+
+        ordered = sorted(typedList, key=lambda t: datetime.fromisoformat(t.date), reverse=True)
+        return ordered[0]
     
-    def save_prediction(self, prediction):
-        query = """INSERT INTO PredictionHistories (Ticker, PreviousReference, NextPredictedValue, PredictionType, Direction, `Date`) VALUES (%s, %s, %s, %s, %s, %s);"""
-        params = (prediction.ticker[0], prediction.previous[0], prediction.next_predicted_value[0], prediction.prediction_type[0], prediction.direction[0], prediction.date)
-        cursor = self.__dbConnection.cursor()
-        cursor.execute(query, params)
-        self.__dbConnection.commit()
-        cursor.close()
+    def save_prediction(self, prediction:Predicted):
+        table = dynamodb.Table('PredictionHistories')
+        try:
+            table.put_item(Item={
+                'ticker': prediction.ticker[0],
+                'date': prediction.date,
+                'direction': prediction.direction[0],
+                'prediction_type': prediction.prediction_type[0],
+                'previous': Decimal(str(prediction.previous[0])),
+                'predicted_value': Decimal(str(prediction.predicted_value[0])),
+            })
+        except Exception as e:
+            print(sys.exc_info()[0])
+            raise
     
-    def update_logs_with_real_values(self, ticker, real_val, real_dir):
-        query = """SELECT Id FROM PredictionHistories WHERE Ticker = %s ORDER BY `Date` DESC LIMIT 1"""
-        params = (ticker, )
-        cursor = self.__dbConnection.cursor()
-        cursor.execute(query, params)
-        result_id = cursor.fetchone()
-        
-        query = """UPDATE PredictionHistories SET RealValue = %s, RealDirection = %s WHERE Id = %s"""
-        params = (real_val, real_dir, result_id[0])
-        cursor = self.__dbConnection.cursor()
-        cursor.execute(query, params)
-        self.__dbConnection.commit()
-        cursor.close()
+    def update_logs_with_real_values(self, ticker, dt, real_val, real_dir):
+
+        table = dynamodb.Table('PredictionHistories')
+        try:
+            response = table.update_item(
+                Key={
+                    'ticker': ticker,
+                    'date': dt
+                },
+                UpdateExpression='SET real_direction = :rd, real_value= :rv',
+                ExpressionAttributeValues={
+                    ':rv': Decimal(str(real_val)),
+                    ':rd': str(real_dir)
+                },
+                ReturnValues="UPDATED_NEW"
+            )
+            return response
+        except Exception as e:
+            print(sys.exc_info()[0])
+            raise
     
 

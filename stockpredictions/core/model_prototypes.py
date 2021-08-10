@@ -13,7 +13,7 @@ HISTORY_DAYS = 40
 TICKER = 'ITUB4'
 
 # %% 
-raw_dataframe = pd.read_csv('C:/Repositories/StockPricePredictions/datasets/b3_stocks_1994_2020.csv')
+raw_dataframe = pd.read_csv('C:\\Repositories\\StockPricesPredictions\\datasets\\b3_stocks_1994_2020.csv')
 dataset = raw_dataframe[raw_dataframe.ticker == TICKER]
 dataset = dataset.drop(columns=["ticker", "datetime"])
  
