@@ -6,12 +6,4 @@ services:
     ports: 
       - "8000:8000"
     environment: 
-      - MYSQL_HOST=172.17.0.2
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=root
-      - MYSQL_DATABASE=StockPricesPrediction
-    
-
-  
-
-  
+      - AWS_DEFAULT_REGION=sa-east-1
