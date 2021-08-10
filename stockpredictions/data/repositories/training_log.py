@@ -1,29 +1,35 @@
-import os
-import mysql.connector
+import sys
+import boto3
+from decimal import Decimal
 from stockpredictions.models import TrainingLog
-from stockpredictions.models import StockPrice
+
+dynamodb = boto3.resource('dynamodb')
 
 class TrainingLogRepository:
     def __init__(self):
-        self.__dbConnection = mysql.connector.connect(
-            host=os.environ['MYSQL_HOST'],
-            user=os.environ['MYSQL_USER'],
-            password=os.environ['MYSQL_PASSWORD'],
-            database=os.environ['MYSQL_DATABASE']
-        )
+        pass
 
-    def save_training_log(self, training_log):
-        query = """INSERT INTO TrainingLog (TrainingDate, DatasetSamplesCount, Accuracy, ModelFileName) VALUES (%s, %s, %s, %s);"""
-        params = (training_log.date[0], training_log.samples_count[0], round(training_log.accuracy[0], 4), training_log.model_file_name[0])
-        cursor = self.__dbConnection.cursor()
-        cursor.execute(query, params)
-        self.__dbConnection.commit()
-        cursor.close()
+    def save_training_log(self, training_log: TrainingLog):
+        table = dynamodb.Table('TrainingLog')
+        try:
+            table.put_item(Item={
+                'date': training_log.date,
+                'model_file_name': training_log.model_file_name,
+                'accuracy': Decimal(str(training_log.accuracy)),
+                'samples_count': training_log.samples_count
+            })
+        except Exception as e:
+            print(sys.exc_info()[0])
+            raise
     
     def get_last_log(self):
-        query = """SELECT TrainingDate, DatasetSamplesCount, Accuracy, ModelFileName FROM TrainingLog ORDER BY TrainingDate DESC"""
-        cursor = self.__dbConnection.cursor()
-        cursor.execute(query)
-        result = cursor.fetchone()
-        cursor.close()
-        return TrainingLog(result[0], result[1], result[2], result[3])
+        table = dynamodb.Table('TrainingLog')
+        response = table.scan()
+        items = response['Items']
+        while 'LastEvaluatedKey' in response:
+            print(response['LastEvaluatedKey'])
+            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+            items.extend(response['Items'])
+        for x in items:
+            yield x
+        
