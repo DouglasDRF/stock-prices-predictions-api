@@ -2,16 +2,13 @@ language: python
 python:
   - "3.8"
 
-branches:
-  only:
-  - master
-  - develop
-  - /^v.*$/
+env: 
+  - AWS_DEFAULT_REGION=sa-east-1
 
 jobs:
 
   include:
-    env: AWS_DEFAULT_REGION=sa-east-1
+
   - stage: Run Tests
     install:
       - pip3 install -r requirements.txt
