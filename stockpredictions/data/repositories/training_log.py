@@ -13,10 +13,10 @@ class TrainingLogRepository:
         table = dynamodb.Table('TrainingLog')
         try:
             table.put_item(Item={
-                'date': training_log.date,
-                'model_file_name': training_log.model_file_name,
-                'accuracy': Decimal(str(training_log.accuracy)),
-                'samples_count': training_log.samples_count
+                'training_date': str(training_log.date),
+                'model_file_name': str(training_log.model_file_name[0]),
+                'accuracy': Decimal(str(training_log.accuracy[0])),
+                'samples_count': int(training_log.samples_count[0])
             })
         except Exception as e:
             print(sys.exc_info()[0])
