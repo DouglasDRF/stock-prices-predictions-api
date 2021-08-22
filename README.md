@@ -10,6 +10,8 @@ Disclaimer: This is not an investment suggestion. This is and experimental tool 
 API with Stock Prices Predictions 1d for helping on Swing Trade using LSTM Deep Learning Algorithm.
 You should insert on table `SupportedCompanies` the ticker symbol to get its being on list to be processed.
 
-This application requires a MySQL database that should be provided before the application startup and its parameters should be provided through Enviroment Variables
-The script for the schemas model it's on file database_mode.sql` 
+This application requires a AWS DynamoDB resource to store the date and if you're ruinnin in a cointainer, the AWS Credentials must be provided by enviroment variables.
+
+The daily automation for running this API should be found at the repo below: </br>
+https://github.com/DouglasDRF/StockPredictionsCronJob
 
