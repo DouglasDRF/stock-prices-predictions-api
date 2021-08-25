@@ -58,11 +58,10 @@ class CoreDataRepository:
         response = table.update_item(
             Key={
                 'ticker': stock_price.ticker,
-                '#dt': stock_price.date
+                'date': stock_price.date
             },
-            UpdateExpression='SET #dt = :d, #opn = :o, #cls = :c, high = :h, low = :l, volume = :v ',
+            UpdateExpression='SET #opn = :o, #cls = :c, high = :h, low = :l, volume = :v ',
             ExpressionAttributeValues={
-                ':d': stock_price.date,
                 ':o': Decimal(str(stock_price.open)),
                 ':c': Decimal(str(stock_price.close)),
                 ':h': Decimal(str(stock_price.high)),
@@ -70,7 +69,6 @@ class CoreDataRepository:
                 ':v': stock_price.volume
             },
             ExpressionAttributeNames={
-                '#dt': 'date',
                 '#opn': 'open',
                 '#cls': 'close'
             },
