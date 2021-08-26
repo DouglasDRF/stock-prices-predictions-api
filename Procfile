@@ -1,0 +1,1 @@
+web: uvicorn  --reload --workers 3  stockpredictions.main:app
