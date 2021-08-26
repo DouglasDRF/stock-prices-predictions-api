@@ -23,7 +23,6 @@ jobs:
     script:
       - docker build -t stockpredictions-api .
       - docker images
-      - docker login
       - docker tag stockpredictions-api stockpredictions-api
   
   - stage: Build and Push Docker Image
