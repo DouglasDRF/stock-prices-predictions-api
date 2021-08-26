@@ -29,9 +29,9 @@ jobs:
   - stage: Build and Push Docker Image
     if: branch = master
     script:
-      - echo "$ECR_PASSWORD" | docker login -u "$ECR_USERNAME" --password-stdin
+      - echo "$ECR_PASSWORD" | docker login -u "$ECR_USERNAME" --password-stdin 012664762550.dkr.ecr.sa-east-1.amazonaws.com
       - docker build -t stockpredictions-api .
       - docker images
-      - docker tag stockpredictions-api:latest 012664762550.dkr.ecr.sa-east-1.amazonaws.com/douglasdrf-docker-images:latest
-      - docker push 012664762550.dkr.ecr.sa-east-1.amazonaws.com/douglasdrf-docker-images:latest
-      - docker push $DOCKER_USERNAME/stockpredictions-api
+      - docker tag stockpredictions-api:latest 012664762550.dkr.ecr.sa-east-1.amazonaws.com/stock-prediction-api:latest
+      - docker push 012664762550.dkr.ecr.sa-east-1.amazonaws.com/stock-prediction-api:latest
+
