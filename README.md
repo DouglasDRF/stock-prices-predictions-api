@@ -2,7 +2,7 @@
 # StockPricesPredictions
 
 [![License](https://img.shields.io/github/license/douglasdrf/StockPricesPredictions?style=plastic)](https://github.com/DouglasDRF/StockPricesPredictions/blob/master/LICENSE)
-[![Build Status](https://img.shields.io/travis/DouglasDRF/StockPricesPredictions?style=plastic)](https://www.travis-ci.com/DouglasDRF/StockPricesPredictions)
+[![Build Status](https://app.travis-ci.com/DouglasDRF/stock-prices-predictions-api.svg?branch=master)](https://app.travis-ci.com/DouglasDRF/stock-prices-predictions-api.svg?branch=master)
 
 
 Disclaimer: This is not an investment suggestion. This is and experimental tool with reseach purposes.
