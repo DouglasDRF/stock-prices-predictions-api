@@ -1,1 +1,1 @@
-web: uvicorn  --reload --workers 2 --port 80  stockpredictions.main:app
+web: uvicorn stockpredictions.main:app --port=${PORT:-80}
