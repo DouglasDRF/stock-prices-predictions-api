@@ -9,8 +9,8 @@ from tensorflow.keras import optimizers
 from tensorflow.keras.layers import Dense, Dropout, LSTM, Input, Activation
 from tensorflow.keras.models import Model
 
-if not os.path.exists(os.getcwd() + '\\trained_models'):
-    os.makedirs(os.getcwd() + '\\trained_models')
+if not os.path.exists(os.getcwd() + '/trained_models'):
+    os.makedirs(os.getcwd() + '/trained_models')
 
 try:
     physical_devices = tf.config.list_physical_devices('GPU')
@@ -144,7 +144,7 @@ last_model_key = None
 
 models_path = os.getcwd()
 models_path = models_path + \
-    ('\\trained_models\\' if '\\' in models_path else '/trained_models/')
+    ('/trained_models/' if '/' in models_path else '/trained_models/')
 
 if response['KeyCount'] > 0:
     last_model_key = response['Contents'][-1]['Key']
