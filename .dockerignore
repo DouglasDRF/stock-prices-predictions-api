@@ -5,3 +5,4 @@ geckodriver.log
 stockpricepredictor-venv
 .pytest_cache
 stockpredictions.egg-info
+.gcloudignore

@@ -98,8 +98,18 @@ class CoreDataRepository:
         sorted_list = sorted(typedDataList, key=lambda t: datetime.strptime(t.date, '%Y-%m-%d'), reverse=True)
         return sorted_list[:limit]
         
-
     def get_history_dataframe(self, history, limit=40):
         df = pd.DataFrame([x.to_dict() for x in history])
         data = df.drop(columns=['ticker', 'timestamp'])
-        return data
+        return data[:limit]
+
+    def get_non_past_days_compliant(self, count=40):
+        supported = self.get_supported_stocks()
+        non_compliant = []
+        
+        for x in supported:
+            res = self.get_history(x)
+            if len(res) < count:
+                non_compliant.append(x)
+        
+        return non_compliant
