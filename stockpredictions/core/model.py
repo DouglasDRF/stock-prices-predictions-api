@@ -1,5 +1,6 @@
 import numpy as np
-import os, boto3
+import os
+import boto3
 import datetime as dt
 import tensorflow as tf
 from sklearn import preprocessing
@@ -16,6 +17,7 @@ try:
     tf.config.experimental.set_memory_growth(physical_devices[0], True)
 except:
     pass
+
 
 class StocksPredictionModel():
 
@@ -98,7 +100,8 @@ class StocksPredictionModel():
         if save == True:
             file_model_name = 'model-' + dt.datetime.now().isoformat().replace(':', '-') + '.h5'
             self.__model.save(models_path + file_model_name, overwrite=True)
-            s3.upload_file(models_path + file_model_name, BUCKET_NAME, file_model_name)
+            s3.upload_file(models_path + file_model_name,
+                           BUCKET_NAME, file_model_name)
             self.is_trained = True
             return file_model_name
         else:
@@ -140,18 +143,23 @@ response = s3.list_objects_v2(Bucket=BUCKET_NAME)
 last_model_key = None
 
 models_path = os.getcwd()
-models_path = models_path + ('\\trained_models\\' if '\\' in models_path else '/trained_models/')
+models_path = models_path + \
+    ('\\trained_models\\' if '\\' in models_path else '/trained_models/')
 
 if response['KeyCount'] > 0:
     last_model_key = response['Contents'][-1]['Key']
     s3.download_file(BUCKET_NAME, last_model_key, models_path + last_model_key)
 
+
 def get_trained_models():
     return os.listdir(models_path)
 
-last_model = models_path + get_trained_models()[-1] if len(get_trained_models()) else ''
+
+last_model = models_path + \
+    get_trained_models()[-1] if len(get_trained_models()) else ''
 
 __static_model_instance = StocksPredictionModel()
+
 
 def get_model_instance() -> StocksPredictionModel:
     return __static_model_instance
