@@ -10,6 +10,9 @@ class DataService:
     def get_supported_stocks(self):
         return self.__repository.get_supported_stocks()
 
+    def get_non_past_days_compliant(self, count):
+        return self.__repository.get_non_past_days_compliant(count)
+
     def save_last(self, ticker):
         last = self.__apiData.get_last_updated_value(ticker)
         self.__repository.save_last(last)

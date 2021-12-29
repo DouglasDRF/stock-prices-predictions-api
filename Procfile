@@ -1,1 +1,1 @@
-web: uvicorn  --reload --workers 3  stockpredictions.main:app
+web: uvicorn  --reload --workers 3 --port 80  stockpredictions.main:app

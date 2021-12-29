@@ -4,3 +4,5 @@ geckodriver.log
 stockpricepredictor-venv
 .pytest_cache
 stockpredictions.egg-info
+app.yaml
+trained_models
