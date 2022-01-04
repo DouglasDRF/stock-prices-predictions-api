@@ -89,7 +89,7 @@ class StocksPredictionModel():
         X_train, y_train, X_test, y_test = self.__split_train_test(
             ochlv_history_normalized, next_open_normalized)
 
-        self.__model.fit(x=X_train, y=y_train, batch_size=64,
+        self.__model.fit(x=X_train, y=y_train, batch_size=32,
                          epochs=50, shuffle=True, validation_split=0.1)
         evaluation = self.__model.evaluate(X_test, y_test)
         print(f'Normalized MSE: {evaluation}')
