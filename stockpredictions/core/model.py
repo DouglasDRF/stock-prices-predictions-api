@@ -6,28 +6,18 @@ import tensorflow as tf
 from sklearn import preprocessing
 from tensorflow import keras
 from tensorflow.keras import optimizers
-from tensorflow.keras.layers import Dense, Dropout, LSTM, Input, Activation
+from tensorflow.keras.layers import Dense, Dropout, LSTM, Activation
 from tensorflow.keras.models import Model
-
-if not os.path.exists(os.getcwd() + '/trained_models'):
-    os.makedirs(os.getcwd() + '/trained_models')
-
-try:
-    physical_devices = tf.config.list_physical_devices('GPU')
-    tf.config.experimental.set_memory_growth(physical_devices[0], True)
-except:
-    pass
-
 
 class StocksPredictionModel():
 
     def __init__(self, history_size=40):
 
         self.is_trained = False
-        self.tickers_on_trainning = []
+        self.tickers_on_training = []
+        self.total_samples_trained = 0
         self.__history_size = history_size
         self.current_accuracy = 0
-        self.__technical_indicators = []
         self.__y_scaler = preprocessing.MinMaxScaler()
 
         try:
@@ -89,7 +79,7 @@ class StocksPredictionModel():
         X_train, y_train, X_test, y_test = self.__split_train_test(
             ochlv_history_normalized, next_open_normalized)
 
-        self.__model.fit(x=X_train, y=y_train, batch_size=32,
+        self.__model.fit(x=X_train, y=y_train, batch_size=24,
                          epochs=50, shuffle=True, validation_split=0.1)
         evaluation = self.__model.evaluate(X_test, y_test)
         print(f'Normalized MSE: {evaluation}')
@@ -137,19 +127,28 @@ class StocksPredictionModel():
         return history_train, y_train, history_test, y_test
 
 
+if not os.path.exists(os.getcwd() + '/trained_models'):
+    os.makedirs(os.getcwd() + '/trained_models')
+
+try:
+    physical_devices = tf.config.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+except:
+    pass
+
 BUCKET_NAME = 'stock-predictions'
 s3 = boto3.client('s3')
-response = s3.list_objects_v2(Bucket=BUCKET_NAME)
+s3_response = s3.list_objects_v2(Bucket=BUCKET_NAME)
+s3_response = [i for i in s3_response['Contents'] if 'datasets' not in i['Key']]
 last_model_key = None
 
 models_path = os.getcwd()
 models_path = models_path + \
     ('/trained_models/' if '/' in models_path else '/trained_models/')
 
-if response['KeyCount'] > 0:
-    last_model_key = response['Contents'][-1]['Key']
+if len(s3_response) > 0:
+    last_model_key = s3_response[-1]['Key']
     s3.download_file(BUCKET_NAME, last_model_key, models_path + last_model_key)
-
 
 def get_trained_models():
     return os.listdir(models_path)

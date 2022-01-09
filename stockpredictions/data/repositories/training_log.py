@@ -16,20 +16,17 @@ class TrainingLogRepository:
                 'model_file_name': str(training_log.model_file_name[0]),
                 'accuracy': Decimal(str(training_log.accuracy[0])),
                 'samples_count': int(training_log.samples_count[0]),
-                'tickers_on_trainning':str(training_log.tickers_on_trainning)
+                'tickers_on_training':str(training_log.tickers_on_training)
             })
         except Exception as e:
             print(sys.exc_info()[0])
             raise
     
-    def get_last_log(self):
+    def get_last_log(self) -> TrainingLog:
         table = dynamodb.Table('TrainingLog')
         response = table.scan()
-        items = response['Items']
-        while 'LastEvaluatedKey' in response:
-            print(response['LastEvaluatedKey'])
-            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
-            items.extend(response['Items'])
-        for x in items:
-            yield x
+        if(response['Count'] > 0):
+            last = response['Items'][-1]
+            return TrainingLog(int(last['samples_count']), float(last['accuracy']), last['model_file_name'], last['tickers_on_training'].split(','))
+         
         
