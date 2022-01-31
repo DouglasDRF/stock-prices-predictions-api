@@ -2,14 +2,14 @@ import sys
 import boto3
 from boto3.dynamodb.conditions import Key
 from decimal import Decimal
-from datetime import datetime
+from datetime import date
 from stockpredictions.models.predicted import Predicted
 
 dynamodb = boto3.resource('dynamodb')
 
 class StatisticsRepository:
     def __init__(self):
-        self.__dbConnection = None
+        pass
 
     def get_last_predicted_price(self, ticker) -> Predicted:
 
@@ -20,10 +20,15 @@ class StatisticsRepository:
         typedList = []
         for x in response['Items']:
             typedList.append(Predicted(x['ticker'], x['previous'], x['predicted_value'], x['prediction_type'], x['direction'], x['date']))
-
-        ordered = sorted(typedList, key=lambda t: datetime.fromisoformat(t.date), reverse=True)
-        return ordered[0]
-    
+        
+        if len(typedList) >= 2:
+            typedList = typedList[-2:]
+            return typedList[0]
+        elif len(typedList) == 1 and date.today().isoformat() > typedList[0].date:
+            return typedList[0]
+        else:
+            raise Exception('No prediction was found previously')
+            
     def save_prediction(self, prediction:Predicted):
         table = dynamodb.Table('PredictionHistories')
         try:

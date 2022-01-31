@@ -97,8 +97,8 @@ class CoreDataRepository:
             x['low'], 
             x['volume']))
 
-        sorted_list = sorted(typedDataList, key=lambda t: datetime.strptime(t.date, '%Y-%m-%d'), reverse=True)
-        return sorted_list[:limit]
+        sorted_list = sorted(typedDataList, key=lambda t: datetime.strptime(t.date, '%Y-%m-%d'), reverse=False)
+        return sorted_list[-limit:]
         
     def get_history_dataframe(self, history, limit=40):
         df = pd.DataFrame([x.to_dict() for x in history])
