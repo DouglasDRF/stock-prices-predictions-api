@@ -10,7 +10,7 @@ async def get_supported_stocks():
     return data_service.get_supported_stocks()
 
 @data_router.get('/data/supported-stocks-non-compliant/{count}', tags=['Data'])
-async def get_non_past_days_compliant(count:int):
+async def get_non_past_days_compliant(count:int=40):
     return data_service.get_non_past_days_compliant(count)
 
 @data_router.put('/data/update-last/{ticker}', tags=['Data'])

@@ -112,7 +112,7 @@ class CoreDataRepository:
         for x in supported:
             res = self.get_history(x)
             last = self.__api_data.get_last_updated_value(x)
-            if len(res) < count or res[0].date != last.date:
+            if len(res) < count or res[-1].date != last.date:
                 non_compliant.append(x)
         
         return non_compliant
