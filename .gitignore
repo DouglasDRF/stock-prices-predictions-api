@@ -6,3 +6,4 @@ stockpricepredictor-venv
 stockpredictions.egg-info
 app.yaml
 trained_models
+**/datasets/**

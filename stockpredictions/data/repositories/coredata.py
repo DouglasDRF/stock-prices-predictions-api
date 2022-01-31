@@ -4,12 +4,14 @@ import boto3
 from boto3.dynamodb.conditions import Key
 from datetime import datetime, timedelta
 from decimal import Decimal
+from stockpredictions.data.svcagents.yahoo_finance import YahooFinanceApiSvcAgent
 from stockpredictions.models import StockPrice
 
 dynamodb = boto3.resource('dynamodb')
 
 class CoreDataRepository:
-    def __init__(self):
+    def __init__(self, api_data=YahooFinanceApiSvcAgent()):
+        self.__api_data = api_data
         pass
 
     def get_supported_stocks(self):
@@ -109,7 +111,8 @@ class CoreDataRepository:
         
         for x in supported:
             res = self.get_history(x)
-            if len(res) < count:
+            last = self.__api_data.get_last_updated_value(x)
+            if len(res) < count or res[0].date != last.date:
                 non_compliant.append(x)
         
         return non_compliant

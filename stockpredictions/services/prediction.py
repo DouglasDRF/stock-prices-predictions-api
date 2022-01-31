@@ -7,6 +7,7 @@ from stockpredictions.core.model import get_model_instance
 from stockpredictions.data.repositories import CoreDataRepository, StatisticsRepository
 import datetime as dt
 
+
 class PredictionService:
 
     def __init__(self, core_repository=CoreDataRepository(), stats_repository=StatisticsRepository()):
@@ -14,7 +15,7 @@ class PredictionService:
         self.__core_repository = core_repository
         self.__stats_repository = stats_repository
 
-    def predict_next_day(self, ticker: str):
+    def predict_next_day(self, ticker: str, save_log: bool = False):
         history = self.__core_repository.get_history(ticker)
         df_history = self.__core_repository.get_history_dataframe(history)
 
@@ -23,11 +24,10 @@ class PredictionService:
 
         direction = Direction.up if price_predicted > history[-1].close else Direction.down
         try:
-            self.__stats_repository.save_prediction(Predicted(ticker, history[-1].close, price_predicted, PredictionType.close, direction,
-             dt.datetime.now().isoformat()))
+            if(save_log):
+                self.__stats_repository.save_prediction(Predicted(ticker, history[-1].close, price_predicted, PredictionType.close, direction,
+                                                                  dt.datetime.now().isoformat()))
         except Exception as e:
             print(str(e))
         finally:
             return price_predicted
-
-    

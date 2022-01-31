@@ -7,3 +7,5 @@ class PredictionType:
 class Direction:
     up = "up"
     down = "down"
+
+BUCKET_NAME = 'stock-predictions'
