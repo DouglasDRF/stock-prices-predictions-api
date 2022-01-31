@@ -8,7 +8,7 @@ from tensorflow import keras
 from tensorflow.keras import optimizers
 from tensorflow.keras.layers import Dense, Dropout, LSTM, Activation
 from tensorflow.keras.models import Model
-import consts
+from .consts import BUCKET_NAME
 
 class StocksPredictionModel():
 
@@ -91,7 +91,7 @@ class StocksPredictionModel():
         if save == True:
             file_model_name = 'model-' + dt.datetime.now().isoformat().replace(':', '-') + '.h5'
             self.__model.save(models_path + file_model_name, overwrite=True)
-            s3.upload_file(models_path + file_model_name, consts.BUCKET_NAME, file_model_name)
+            s3.upload_file(models_path + file_model_name, BUCKET_NAME, file_model_name)
             self.is_trained = True
             return file_model_name
         else:
@@ -136,7 +136,7 @@ except:
     pass
 
 s3 = boto3.client('s3')
-s3_response = s3.list_objects_v2(Bucket=consts.BUCKET_NAME)
+s3_response = s3.list_objects_v2(Bucket=BUCKET_NAME)
 s3_response = [i for i in s3_response['Contents'] if 'datasets' not in i['Key']]
 last_model_key = None
 
@@ -146,7 +146,7 @@ models_path = models_path + \
 
 if len(s3_response) > 0:
     last_model_key = s3_response[-1]['Key']
-    s3.download_file(consts.BUCKET_NAME, last_model_key, models_path + last_model_key)
+    s3.download_file(BUCKET_NAME, last_model_key, models_path + last_model_key)
 
 def get_trained_models():
     return os.listdir(models_path)
