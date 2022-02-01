@@ -18,16 +18,11 @@ class CoreDataRepository:
     def get_last_predictions(self):
         table = dynamodb.Table('PredictionHistories')
 
-        lastday = datetime.today()
+        lastday = datetime.now()
 
-        if(lastday.hour >= 0 and lastday.hour < 19):
-            lastday = lastday - timedelta(days=1)
-
-            if lastday.weekday == "Sunday":
-                lastday = lastday - timedelta(days=2)
-            elif lastday.weekday == "Saturday":
-                lastday = lastday - timedelta(days=1)
-
+        if lastday.hour >= 0 and lastday.hour < 19:
+            lastday = get_last_working_day()
+            
         response = table.query(
             KeyConditionExpression=Key('date').eq(get_last_working_day().isoformat())
         )
