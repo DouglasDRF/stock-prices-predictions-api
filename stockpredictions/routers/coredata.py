@@ -18,7 +18,7 @@ async def update_last_price(ticker: str, credentials=Depends(get_basic_auth)):
     return data_service.update_last(ticker)
 
 @data_router.post('/data/save-last/{ticker}', tags=['Data'])
-async def update_last_price(ticker: str, credentials=Depends(get_basic_auth)):
+async def save_last_price(ticker: str, credentials=Depends(get_basic_auth)):
     return data_service.save_last(ticker)
 
 @data_router.post('/data/fill-history/{ticker}', tags=['Data'])
