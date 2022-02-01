@@ -1,10 +1,12 @@
 import pandas as pd
 import boto3
 from boto3.dynamodb.conditions import Key
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from decimal import Decimal
+from stockpredictions.data.repositories.helper import get_last_working_day
 from stockpredictions.data.svcagents.yahoo_finance import YahooFinanceApiSvcAgent
 from stockpredictions.models import StockPrice
+from stockpredictions.models.predicted import Predicted
 
 dynamodb = boto3.resource('dynamodb')
 
@@ -12,6 +14,29 @@ dynamodb = boto3.resource('dynamodb')
 class CoreDataRepository:
     def __init__(self, api_data=YahooFinanceApiSvcAgent()):
         self.__api_data = api_data
+
+    def get_last_predictions(self):
+        table = dynamodb.Table('PredictionHistories')
+
+        lastday = datetime.today()
+
+        if(lastday.hour >= 0 and lastday.hour < 19):
+            lastday = lastday - timedelta(days=1)
+
+            if lastday.weekday == "Sunday":
+                lastday = lastday - timedelta(days=2)
+            elif lastday.weekday == "Saturday":
+                lastday = lastday - timedelta(days=1)
+
+        response = table.query(
+            KeyConditionExpression=Key('date').eq(get_last_working_day().isoformat())
+        )
+        result = []
+        for r in response['Items']:
+            result.append(Predicted(r['ticker'], float(r['previous']), float(r['predicted_value']),
+                          r['prediction_type'], r['direction'], date.fromisoformat(r['date'])))
+
+        return result
 
     def get_supported_stocks(self):
         table = dynamodb.Table('SupportedCompanies')
