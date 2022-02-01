@@ -15,7 +15,6 @@ jobs:
 
     script: 
       - pwd
-      - pip3 install -e .
       - pytest
 
   - stage: Build Docker Image
