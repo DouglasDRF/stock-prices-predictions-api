@@ -15,11 +15,11 @@ jobs:
 
     script: 
       - pwd
+      - pip3 install -e .
       - pytest
 
   - stage: Build Docker Image
     if: branch != master
     script:
-      - docker build -t stockpredictions-api .
-      - docker images
-      - docker tag stockpredictions-api stockpredictions-api
+      - docker build -t stockpredictions-api:latest .
+      
