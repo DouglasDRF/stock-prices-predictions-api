@@ -7,6 +7,7 @@ from stockpredictions.models.predicted import Predicted
 
 dynamodb = boto3.resource('dynamodb')
 
+
 class StatisticsRepository:
     def __init__(self):
         pass
@@ -19,8 +20,9 @@ class StatisticsRepository:
         )
         typedList = []
         for x in response['Items']:
-            typedList.append(Predicted(x['ticker'], x['previous'], x['predicted_value'], x['prediction_type'], x['direction'], x['date']))
-        
+            typedList.append(Predicted(
+                x['ticker'], x['previous'], x['predicted_value'], x['prediction_type'], x['direction'], x['date']))
+
         if len(typedList) >= 2:
             typedList = typedList[-2:]
             return typedList[0]
@@ -28,8 +30,8 @@ class StatisticsRepository:
             return typedList[0]
         else:
             raise Exception('No prediction was found previously')
-            
-    def save_prediction(self, prediction:Predicted):
+
+    def save_prediction(self, prediction: Predicted):
         table = dynamodb.Table('PredictionHistories')
         try:
             table.put_item(Item={
@@ -43,7 +45,7 @@ class StatisticsRepository:
         except Exception as e:
             print(sys.exc_info()[0])
             raise
-    
+
     def update_logs_with_real_values(self, ticker, dt, real_val, real_dir):
 
         table = dynamodb.Table('PredictionHistories')
@@ -64,5 +66,3 @@ class StatisticsRepository:
         except Exception as e:
             print(sys.exc_info()[0])
             raise
-    
-

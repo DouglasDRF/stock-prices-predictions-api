@@ -1,10 +1,6 @@
 from stockpredictions.data.svcagents.yahoo_finance import YahooFinanceApiSvcAgent
-import datetime
 
-
-class TestSvcAgent:
-
-    def test_get_last_updated_value(self):
+def test_get_last_updated_value():
 
         svc = YahooFinanceApiSvcAgent()
         result = svc.get_last_updated_value('PETR4')
@@ -17,7 +13,7 @@ class TestSvcAgent:
         assert result.low >= 0.0
         assert result.low >= 0
 
-    def test_get_history_values(self):
+def test_get_history_values():
 
         svc = YahooFinanceApiSvcAgent()
         result = svc.get_history_values('PETR4')

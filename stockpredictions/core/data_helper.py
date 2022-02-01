@@ -11,11 +11,11 @@ def load_dataset(ticker='BBDC4', path=os.getcwd() + '/datasets/b3_stocks_1994_20
     if not os.path.exists(path):
         s3 = boto3.client('s3')
         s3.download_file(BUCKET_NAME, 'datasets/b3_stocks_1994_2020.csv', path)
-    
+ 
     raw_dataframe = pd.read_csv(path)
     dataset = raw_dataframe[raw_dataframe.ticker == ticker]
     try:
         dataset = dataset.drop(columns=["ticker", "datetime"])
-    except:
+    except Exception:
         print('ticker and/or datetime columns doesn\'t not exists')
     return dataset

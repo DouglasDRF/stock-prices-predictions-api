@@ -9,6 +9,7 @@ from stockpredictions.models import StockPrice
 
 dynamodb = boto3.resource('dynamodb')
 
+
 class CoreDataRepository:
     def __init__(self, api_data=YahooFinanceApiSvcAgent()):
         self.__api_data = api_data
@@ -20,7 +21,8 @@ class CoreDataRepository:
         items = response['Items']
         while 'LastEvaluatedKey' in response:
             print(response['LastEvaluatedKey'])
-            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+            response = table.scan(
+                ExclusiveStartKey=response['LastEvaluatedKey'])
             items.extend(response['Items'])
         for x in items:
             yield x['B3Code']
@@ -79,27 +81,28 @@ class CoreDataRepository:
         return response
 
     def get_history(self, ticker, limit=40) -> list:
-      
         table = dynamodb.Table('StockPrices')
         date = datetime.today() - timedelta(days=limit * 3)
         date = date.strftime('%Y-%m-%d')
         response = table.query(
-            KeyConditionExpression=Key('ticker').eq(ticker) & Key('date').gt(date)
+            KeyConditionExpression=Key('ticker').eq(
+                ticker) & Key('date').gt(date)
         )
         typedDataList = []
 
         for x in response['Items']:
-            typedDataList.append(StockPrice(x['ticker'], 
-            datetime.fromisoformat(x['date']),
-            x['open'],
-            x['close'],
-            x['high'], 
-            x['low'], 
-            x['volume']))
+            typedDataList.append(StockPrice(x['ticker'],
+                                            datetime.fromisoformat(x['date']),
+                                            x['open'],
+                                            x['close'],
+                                            x['high'],
+                                            x['low'],
+                                            x['volume']))
 
-        sorted_list = sorted(typedDataList, key=lambda t: datetime.strptime(t.date, '%Y-%m-%d'), reverse=False)
+        sorted_list = sorted(typedDataList, key=lambda t: datetime.strptime(
+            t.date, '%Y-%m-%d'), reverse=False)
         return sorted_list[-limit:]
-        
+
     def get_history_dataframe(self, history, limit=40):
         df = pd.DataFrame([x.to_dict() for x in history])
         data = df.drop(columns=['ticker', 'timestamp'])
@@ -108,11 +111,11 @@ class CoreDataRepository:
     def get_non_past_days_compliant(self, count=40):
         supported = self.get_supported_stocks()
         non_compliant = []
-        
+
         for x in supported:
             res = self.get_history(x)
             last = self.__api_data.get_last_updated_value(x)
             if len(res) < count or res[-1].date != last.date:
                 non_compliant.append(x)
-        
+
         return non_compliant
