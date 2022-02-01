@@ -3,7 +3,7 @@ import boto3
 from boto3.dynamodb.conditions import Key
 from datetime import datetime, timedelta, date
 from decimal import Decimal
-from stockpredictions.data.repositories.helper import get_last_working_day
+from stockpredictions.data.helper import get_last_working_day
 from stockpredictions.data.svcagents.yahoo_finance import YahooFinanceApiSvcAgent
 from stockpredictions.models import StockPrice
 from stockpredictions.models.predicted import Predicted

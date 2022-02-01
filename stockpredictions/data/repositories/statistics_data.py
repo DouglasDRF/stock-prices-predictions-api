@@ -2,7 +2,7 @@ import boto3
 from boto3.dynamodb.conditions import Key
 from decimal import Decimal
 from datetime import date
-from stockpredictions.data.repositories.helper import get_last_working_day
+from stockpredictions.data.helper import get_last_working_day
 from stockpredictions.models.predicted import Predicted
 
 dynamodb = boto3.resource('dynamodb')
