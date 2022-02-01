@@ -21,6 +21,8 @@ class StocksPredictionModel():
         self.current_accuracy = 0
         self.__y_scaler = preprocessing.MinMaxScaler()
 
+        model = None
+
         try:
             model = keras.models.load_model(last_model)
             self.is_trained = True
@@ -156,7 +158,6 @@ last_model = models_path + \
     get_trained_models()[-1] if len(get_trained_models()) else ''
 
 __static_model_instance = StocksPredictionModel()
-
 
 def get_model_instance() -> StocksPredictionModel:
     return __static_model_instance

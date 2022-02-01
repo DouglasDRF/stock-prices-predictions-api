@@ -2,30 +2,27 @@ import boto3
 from boto3.dynamodb.conditions import Key
 from decimal import Decimal
 from datetime import date
+from stockpredictions.data.repositories.helper import get_last_working_day
 from stockpredictions.models.predicted import Predicted
 
 dynamodb = boto3.resource('dynamodb')
 
 
 class StatisticsRepository:
-    def __init__(self):
-        pass
 
     def get_last_predicted_price(self, ticker) -> Predicted:
 
         table = dynamodb.Table('PredictionHistories')
         response = table.query(
-            KeyConditionExpression=Key('ticker').eq(ticker)
+            KeyConditionExpression=Key('ticker').eq(ticker) & Key(
+                'date').eq(get_last_working_day().isoformat())
         )
         typedList = []
         for x in response['Items']:
             typedList.append(Predicted(
-                x['ticker'], x['previous'], x['predicted_value'], x['prediction_type'], x['direction'], x['date']))
-
-        if len(typedList) >= 2:
-            typedList = typedList[-2:]
-            return typedList[0]
-        elif len(typedList) == 1 and date.today().isoformat() > typedList[0].date:
+                x['ticker'], float(x['previous']), float(x['predicted_value']), x['prediction_type'], x['direction'], date.fromisoformat(x['date'])))
+        
+        if len(typedList) == 1:
             return typedList[0]
         else:
             raise Exception('No prediction was found previously')
@@ -34,12 +31,12 @@ class StatisticsRepository:
         table = dynamodb.Table('PredictionHistories')
         try:
             table.put_item(Item={
-                'ticker': prediction.ticker[0],
+                'ticker': prediction.ticker,
                 'date': prediction.date,
-                'direction': prediction.direction[0],
-                'prediction_type': prediction.prediction_type[0],
-                'previous': Decimal(str(prediction.previous[0])),
-                'predicted_value': Decimal(str(prediction.predicted_value[0])),
+                'direction': prediction.direction,
+                'prediction_type': prediction.prediction_type,
+                'previous': Decimal(str(prediction.previous)),
+                'predicted_value': Decimal(str(prediction.predicted_value)),
             })
         except Exception as e:
             print(e)
@@ -51,8 +48,8 @@ class StatisticsRepository:
         try:
             response = table.update_item(
                 Key={
-                    'ticker': ticker,
-                    'date': dt
+                    'date': dt.isoformat(),
+                    'ticker': ticker
                 },
                 UpdateExpression='SET real_direction = :rd, real_value= :rv',
                 ExpressionAttributeValues={
@@ -61,7 +58,7 @@ class StatisticsRepository:
                 },
                 ReturnValues="UPDATED_NEW"
             )
-            return response
+            return response['Attributes']
         except Exception as e:
             print(e)
             raise

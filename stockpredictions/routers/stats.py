@@ -5,6 +5,9 @@ from stockpredictions.services import StatisticsService
 stats_router = APIRouter()
 stats_service = StatisticsService()
 
-@stats_router.put('/stats/{ticker}', tags=['Stats'])
+@stats_router.put('/stats/predictions/{ticker}', tags=['Stats'])
 async def update_with_real_values(ticker: str, credentials=Depends(get_basic_auth)):
-    return { 'updated_last_prediction': stats_service.update_stats(ticker) }
+    response = stats_service.update_stats(ticker)
+    if response is not None:
+        return response
+    
