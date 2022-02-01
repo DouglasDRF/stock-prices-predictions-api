@@ -1,4 +1,3 @@
-import sys
 import boto3
 from boto3.dynamodb.conditions import Key
 from decimal import Decimal
@@ -43,7 +42,7 @@ class StatisticsRepository:
                 'predicted_value': Decimal(str(prediction.predicted_value[0])),
             })
         except Exception as e:
-            print(sys.exc_info()[0])
+            print(e)
             raise
 
     def update_logs_with_real_values(self, ticker, dt, real_val, real_dir):
@@ -64,5 +63,5 @@ class StatisticsRepository:
             )
             return response
         except Exception as e:
-            print(sys.exc_info()[0])
+            print(e)
             raise

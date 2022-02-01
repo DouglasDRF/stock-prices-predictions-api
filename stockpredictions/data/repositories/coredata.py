@@ -1,4 +1,3 @@
-import sys
 import pandas as pd
 import boto3
 from boto3.dynamodb.conditions import Key
@@ -13,7 +12,6 @@ dynamodb = boto3.resource('dynamodb')
 class CoreDataRepository:
     def __init__(self, api_data=YahooFinanceApiSvcAgent()):
         self.__api_data = api_data
-        pass
 
     def get_supported_stocks(self):
         table = dynamodb.Table('SupportedCompanies')
@@ -54,7 +52,7 @@ class CoreDataRepository:
                 'volume': stock_price.volume
             })
         except Exception as e:
-            print(sys.exc_info()[0])
+            print(e)
             raise
 
     def update_last(self, stock_price: StockPrice):
