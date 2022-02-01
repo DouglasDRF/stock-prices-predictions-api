@@ -1,8 +1,10 @@
-
 # StockPricesPredictions
 
 [![License](https://img.shields.io/github/license/douglasdrf/StockPricesPredictions?style=plastic)](https://github.com/DouglasDRF/StockPricesPredictions/blob/master/LICENSE)
-[![Build Status](https://app.travis-ci.com/DouglasDRF/stock-prices-predictions-api.svg?branch=master)](https://app.travis-ci.com/DouglasDRF/stock-prices-predictions-api.svg?branch=master)
+![Lines of code](https://img.shields.io/tokei/lines/github/DouglasDRF/stock-prices-predictions-api?style=plastic)
+[![Build Status](https://img.shields.io/travis/com/DouglasDRF/stock-prices-predictions-api/master?style=plastic)](https://app.travis-ci.com/github/DouglasDRF/stock-prices-predictions-api)
+[![Code Quality](https://img.shields.io/codacy/grade/0d099f9713954c929336ea0e453403a8/master?style=plastic)](https://www.codacy.com/gh/DouglasDRF/stock-prices-predictions-api/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=DouglasDRF/stock-prices-predictions-api&amp;utm_campaign=Badge_Grade)
+[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/DouglasDRF/stock-prices-predictions-api?style=plastic)](https://codeclimate.com/github/DouglasDRF/stock-prices-predictions-api/maintainability)
 
 
 Disclaimer: This is not an investment suggestion. This is and experimental tool with reseach purposes.
@@ -14,4 +16,3 @@ This application requires a AWS DynamoDB resource to store the date and if you'r
 
 The daily automation for running this API should be found at the repo below: </br>
 https://github.com/DouglasDRF/StockPredictionsCronJob
-
