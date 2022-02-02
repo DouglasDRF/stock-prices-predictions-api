@@ -14,9 +14,9 @@ class TrainingLogRepository:
         table = dynamodb.Table('TrainingLog')
         try:
             table.put_item(Item={
-                'model_file_name': str(training_log.model_file_name[0]),
-                'accuracy': Decimal(str(training_log.accuracy[0])),
-                'samples_count': int(training_log.samples_count[0]),
+                'model_file_name': str(training_log.model_file_name),
+                'accuracy': Decimal(str(training_log.accuracy)),
+                'samples_count': int(training_log.samples_count),
                 'tickers_on_training': str(training_log.tickers_on_training)
             })
         except Exception as e:
@@ -28,5 +28,7 @@ class TrainingLogRepository:
         table = dynamodb.Table('TrainingLog')
         response = table.scan()
         if(response['Count'] > 0):
+            response['Items'].sort(key=lambda x: x['model_file_name'])
             last = response['Items'][-1]
-            return TrainingLog(int(last['samples_count']), float(last['accuracy']), last['model_file_name'], last['tickers_on_training'].split(','))
+            return TrainingLog(int(last['samples_count']), float(last['accuracy']), last['model_file_name'],
+             last['tickers_on_training'].split(','))

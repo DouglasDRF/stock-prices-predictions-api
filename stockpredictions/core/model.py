@@ -10,6 +10,8 @@ from tensorflow.keras.layers import Dense, Dropout, LSTM, Activation
 from tensorflow.keras.models import Model
 from .consts import BUCKET_NAME
 
+batch_size = 16
+
 class StocksPredictionModel():
 
     def __init__(self, history_size=40):
@@ -82,7 +84,7 @@ class StocksPredictionModel():
         X_train, y_train, X_test, y_test = self.__split_train_test(
             ochlv_history_normalized, next_open_normalized)
 
-        self.__model.fit(x=X_train, y=y_train, batch_size=24,
+        self.__model.fit(x=X_train, y=y_train, batch_size=batch_size,
                          epochs=50, shuffle=True, validation_split=0.1)
         evaluation = self.__model.evaluate(X_test, y_test)
         print(f'Normalized MSE: {evaluation}')
@@ -93,7 +95,8 @@ class StocksPredictionModel():
         if save == True:
             file_model_name = 'model-' + dt.datetime.now().isoformat().replace(':', '-') + '.h5'
             self.__model.save(models_path + file_model_name, overwrite=True)
-            s3.upload_file(models_path + file_model_name, BUCKET_NAME, file_model_name)
+            s3.upload_file(models_path + file_model_name,
+                           BUCKET_NAME, file_model_name)
             self.is_trained = True
             return file_model_name
         else:
@@ -128,18 +131,21 @@ class StocksPredictionModel():
 
         return history_train, y_train, history_test, y_test
 
+
 if not os.path.exists(os.getcwd() + '/trained_models'):
     os.makedirs(os.getcwd() + '/trained_models')
 
 try:
     physical_devices = tf.config.list_physical_devices('GPU')
     tf.config.experimental.set_memory_growth(physical_devices[0], True)
+    batch_size = 64
 except Exception as e:
     print(e)
 
 s3 = boto3.client('s3')
 s3_response = s3.list_objects_v2(Bucket=BUCKET_NAME)
-s3_response = [i for i in s3_response['Contents'] if 'datasets' not in i['Key']]
+s3_response = [i for i in s3_response['Contents']
+               if 'datasets' not in i['Key']]
 last_model_key = None
 
 models_path = os.getcwd()
@@ -147,8 +153,10 @@ models_path = models_path + \
     ('/trained_models/' if '/' in models_path else '/trained_models/')
 
 if len(s3_response) > 0:
+    s3_response.sort(key=lambda x: x['Key'])
     last_model_key = s3_response[-1]['Key']
     s3.download_file(BUCKET_NAME, last_model_key, models_path + last_model_key)
+
 
 def get_trained_models():
     return os.listdir(models_path)
@@ -158,6 +166,7 @@ last_model = models_path + \
     get_trained_models()[-1] if len(get_trained_models()) else ''
 
 __static_model_instance = StocksPredictionModel()
+
 
 def get_model_instance() -> StocksPredictionModel:
     return __static_model_instance
