@@ -38,8 +38,8 @@ class TrainingService:
         if(self.__model.is_trained and len(self.__model.tickers_on_training) == 0):
             log = self.__training_log.get_last_log()
             self.__model.tickers_on_training = log.tickers_on_training
-            self.__model.current_accuracy = log.accuracy[0]
-            self.__model.total_samples_trained = log.samples_count[0]
+            self.__model.current_accuracy = log.accuracy
+            self.__model.total_samples_trained = log.samples_count
 
         return {
             "is_model_trained": self.__model.is_trained,
