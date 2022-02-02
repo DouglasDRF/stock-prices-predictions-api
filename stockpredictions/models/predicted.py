@@ -8,7 +8,3 @@ class Predicted:
         self.direction = direction
         self.real_direction = real_direction
         self.date = date
-
-    def to_dict(self):
-        result = {"ticker": self.ticker, "previous": self.previous, "next_predicted_value": self.predicted_value, "real_value": self.real_value, "prediction_type": self.prediction_type, "direction": self.direction, "real_direction": self.real_direction, "date": self.date}
-        return result

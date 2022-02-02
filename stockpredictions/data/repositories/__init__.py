@@ -1,3 +1,3 @@
-from .coredata import CoreDataRepository
+from .core_data import CoreDataRepository
 from .statistics_data import StatisticsRepository
 from .training_log import TrainingLogRepository
