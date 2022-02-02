@@ -1,7 +1,7 @@
 import pandas as pd
 import boto3
 from boto3.dynamodb.conditions import Key
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, timezone
 from decimal import Decimal
 from stockpredictions.data.helper import get_last_working_day
 from stockpredictions.data.svcagents.yahoo_finance import YahooFinanceApiSvcAgent
@@ -22,9 +22,12 @@ class CoreDataRepository:
 
         if lastday.hour >= 0 and lastday.hour < 19:
             lastday = get_last_working_day()
+        else:
+            lastday = lastday.date()
+
             
         response = table.query(
-            KeyConditionExpression=Key('date').eq(get_last_working_day().isoformat())
+            KeyConditionExpression=Key('date').eq(lastday.isoformat())
         )
         result = []
         for r in response['Items']:
