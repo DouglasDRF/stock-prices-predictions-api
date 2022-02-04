@@ -4,6 +4,7 @@ from stockpredictions.core.model import get_model_instance
 from stockpredictions.data.repositories import CoreDataRepository, StatisticsRepository
 import datetime as dt
 
+
 class PredictionService:
 
     def __init__(self, core_repository=CoreDataRepository(), stats_repository=StatisticsRepository()):
@@ -16,8 +17,7 @@ class PredictionService:
         df_history = self.__core_repository.get_history_dataframe(history)
 
         ochlv_normalized = self.__model.normalize_ochlv_history(df_history)
-        price_predicted = round(
-            self.__model.predict(ochlv_normalized).item(0), 2)
+        price_predicted = round(self.__model.predict(ochlv_normalized).item(0), 2)
 
         direction = Direction.up if price_predicted > history[-1].close else Direction.down
         try:
