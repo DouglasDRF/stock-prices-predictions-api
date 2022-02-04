@@ -1,6 +1,8 @@
 from datetime import datetime
 import re
 
+from pydantic import validate_model
+
 
 class StockPrice():
 
@@ -13,7 +15,24 @@ class StockPrice():
         self.high = round(float(high), 2)
         self.low = round(float(low), 2)
         self.volume = volume
-        return
-
+        self.validate()
+        
     def to_dict(self):
         return {'ticker': self.ticker, 'timestamp': self.date, 'open': self.open, 'close': self.close, 'high': self.high, 'low': self.close, 'volume': self.volume}
+
+    def validate(self):
+        if self.ticker == '' or None:
+            raise('Ticker cannot be empty or null')
+        if self.date == '' or None:
+            raise('date cannot be empty or null')
+        if self.open == 0 or None:
+            raise('open cannot be empty or null')
+        if self.close == 0 or None:
+            raise('close cannot be empty or null')
+        if self.high == 0 or None:
+            raise('high cannot be empty or null')
+        if self.low == 0 or None:
+            raise('low cannot be empty or null')
+        if self.volume == 0 or None:
+            raise('volume cannot be empty or null')
+        
