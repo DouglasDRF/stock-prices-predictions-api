@@ -1,8 +1,4 @@
 from datetime import datetime
-import re
-
-from pydantic import validate_model
-
 
 class StockPrice():
 

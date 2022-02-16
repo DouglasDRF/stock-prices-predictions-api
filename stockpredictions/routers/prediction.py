@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 from stockpredictions.services import PredictionService
+from stockpredictions.services.service_models.model_responses import PredictNextDayResponse
 
 
 prediction_router = APIRouter()
 prediction_service = PredictionService()
 
-
-@prediction_router.get('/prediction/nextday/{ticker}', tags=['Prediction'])
+@prediction_router.get('/prediction/nextday/{ticker}',  response_model=PredictNextDayResponse, tags=['Prediction'])
 async def predict_next_day(ticker: str, save_log: bool = False):
     return {'ticker': ticker, 'next_day_value': prediction_service.predict_next_day(ticker, save_log)}
 
