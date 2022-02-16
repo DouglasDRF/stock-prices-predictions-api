@@ -2,6 +2,7 @@ from stockpredictions.core.consts import Direction
 from stockpredictions.data.repositories import StatisticsRepository
 from stockpredictions.data.svcagents import YahooFinanceApiSvcAgent
 from stockpredictions.models.predicted import Predicted
+import pandas as pd
 
 
 class StatisticsService:
@@ -24,3 +25,22 @@ class StatisticsService:
         except Exception as e:
             print(e)
             return None
+
+    def get_real_current_overall_accuracy(self):
+        predictions = self.__stats.get_all_predictions_updated()
+        df = pd.DataFrame(vars(p) for p in predictions)
+
+        correct_predictions = len(df[df.real_direction == df.direction])
+        percentage = correct_predictions / len(predictions) * 100
+
+        return {'overall_current_predictions_percentage': percentage}
+
+    def get_real_current_accuracy_by_ticker(self, ticker: str):
+        predictions = self.__stats.get_all_predictions_updated()
+        df = pd.DataFrame(vars(p) for p in predictions)
+        df = df.drop(df[df.ticker != ticker].index)
+
+        correct_predictions = len(df[df.real_direction == df.direction])
+        percentage = correct_predictions / len(df) * 100
+
+        return {'current_predictions_percentage': percentage}
