@@ -1,3 +1,4 @@
+from typing import List
 import boto3
 from boto3.dynamodb.conditions import Key
 from decimal import Decimal
@@ -21,7 +22,7 @@ class StatisticsRepository:
         for x in response['Items']:
             typedList.append(Predicted(
                 x['ticker'], float(x['previous']), float(x['predicted_value']), x['prediction_type'], x['direction'], date.fromisoformat(x['date'])))
-        
+
         if len(typedList) == 1:
             return typedList[0]
         else:
@@ -59,6 +60,29 @@ class StatisticsRepository:
                 ReturnValues="UPDATED_NEW"
             )
             return response['Attributes']
+        except Exception as e:
+            print(e)
+            raise
+
+    def get_all_predictions_updated(self) -> List:
+        table = dynamodb.Table('PredictionHistories')
+        try:
+            response = table.scan()
+            items = response['Items']
+            while 'LastEvaluatedKey' in response:
+                print(response['LastEvaluatedKey'])
+                response = table.scan(
+                    ExclusiveStartKey=response['LastEvaluatedKey'])
+                items.extend(response['Items'])
+            result = []
+            for x in items:
+                try:
+                    result.append(Predicted(ticker=x['ticker'], predicted_value=x['predicted_value'], date=x['date'],
+                                            real_direction=x['real_direction'], real_value=x['real_value'], previous=['previous'], direction=x['direction'],
+                                            prediction_type=x['prediction_type']))
+                except KeyError:
+                    pass
+            return result
         except Exception as e:
             print(e)
             raise

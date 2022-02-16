@@ -1,1 +1,1 @@
-web: uvicorn stockpredictions.main:app --host 0.0.0.0 --port=${PORT:-8000} --workers 2
+web: newrelic-admin run-program uvicorn stockpredictions.main:app --host 0.0.0.0 --port=${PORT:-8000} --workers 2
