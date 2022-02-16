@@ -9,7 +9,7 @@ class DataService:
 
     def get_last_predictions(self):
         return self.__repository.get_last_predictions()
-    
+
     def get_supported_stocks(self):
         return self.__repository.get_supported_stocks()
 

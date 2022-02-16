@@ -12,7 +12,7 @@ class StockPrice():
         self.low = round(float(low), 2)
         self.volume = volume
         self.validate()
-        
+
     def to_dict(self):
         return {'ticker': self.ticker, 'timestamp': self.date, 'open': self.open, 'close': self.close, 'high': self.high, 'low': self.close, 'volume': self.volume}
 

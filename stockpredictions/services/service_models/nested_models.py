@@ -10,7 +10,6 @@ class StockPrice(BaseModel):
     low: float
     volume: int
 
-    
 class Predicted(BaseModel):
     ticker: str
     previous: str
