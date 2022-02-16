@@ -9,3 +9,6 @@ trained_models
 **/datasets/**
 coverage.xml
 .coverage
+.terraform
+.terraform.lock.hcl
+*.tfstate
