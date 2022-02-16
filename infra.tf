@@ -89,3 +89,13 @@ resource "aws_dynamodb_table" "app-stock-predictions-api-ApiCredentials-table" {
   }
 }
 
+resource "aws_s3_bucket" "b" {
+  bucket = "stock-predictions"
+  acl    = "private"
+}
+resource "aws_s3_bucket_object" "models-folder" {
+  bucket = aws_s3_bucket.b.id
+  acl    = "private"
+  key    = "datasets/"
+  source = "/dev/null"
+}
