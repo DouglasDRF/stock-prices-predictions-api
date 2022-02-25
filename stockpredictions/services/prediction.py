@@ -4,6 +4,8 @@ from stockpredictions.core.model import get_model_instance
 from stockpredictions.data.repositories import CoreDataRepository, StatisticsRepository
 import datetime as dt
 
+from stockpredictions.services.service_models.model_responses import PredictNextDayResponse
+
 
 class PredictionService:
 
@@ -27,4 +29,4 @@ class PredictionService:
         except Exception as e:
             print(str(e))
         finally:
-            return price_predicted
+            return PredictNextDayResponse(ticker=ticker, next_day_value=float(price_predicted))

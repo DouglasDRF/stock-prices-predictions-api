@@ -11,7 +11,6 @@ from stockpredictions.models.predicted import Predicted
 
 dynamodb = boto3.resource('dynamodb')
 
-
 class CoreDataRepository:
     def __init__(self, api_data=YahooFinanceApiSvcAgent()):
         self.__api_data = api_data
@@ -30,12 +29,11 @@ class CoreDataRepository:
         response = table.query(
             KeyConditionExpression=Key('date').eq(lastday.isoformat())
         )
-        result = []
+        
         for r in response['Items']:
-            result.append(Predicted(r['ticker'], float(r['previous']), float(r['predicted_value']),
-                          r['prediction_type'], r['direction'], date.fromisoformat(r['date'])))
-
-        return result
+            yield Predicted(r['ticker'], float(r['previous']), float(r['predicted_value']),
+                          r['prediction_type'], r['direction'], date.fromisoformat(r['date']))
+        
 
     def get_supported_stocks(self):
         table = dynamodb.Table('SupportedCompanies')
@@ -79,7 +77,7 @@ class CoreDataRepository:
             print(e)
             raise
 
-    def update_last(self, stock_price: StockPrice):
+    def update_last(self, stock_price: StockPrice) -> StockPrice:
         table = dynamodb.Table('StockPrices')
         response = table.update_item(
             Key={
@@ -100,7 +98,7 @@ class CoreDataRepository:
             },
             ReturnValues="UPDATED_NEW"
         )
-        return response
+        return stock_price
 
     def get_history(self, ticker, limit=40) -> list:
         table = dynamodb.Table('StockPrices')

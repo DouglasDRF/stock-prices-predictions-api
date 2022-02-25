@@ -2,6 +2,7 @@ from stockpredictions.models import TrainingLog
 from stockpredictions.core.model import get_model_instance
 from stockpredictions.core.data_helper import load_dataset
 from stockpredictions.data.repositories import TrainingLogRepository
+from stockpredictions.services.service_models.model_responses import TrainingStatusResponse
 
 
 class TrainingService:
@@ -41,8 +42,7 @@ class TrainingService:
             self.__model.current_accuracy = log.accuracy
             self.__model.total_samples_trained = log.samples_count
 
-        return {
-            "is_model_trained": self.__model.is_trained,
-            "current_accuracy": float(self.__model.current_accuracy),
-            "tickers_on_training": self.__model.tickers_on_training
-        }
+        return TrainingStatusResponse(
+            is_model_trained=self.__model.is_trained,
+            current_accuracy=float(self.__model.current_accuracy),
+            tickers_on_training=self.__model.tickers_on_training)

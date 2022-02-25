@@ -1,7 +1,9 @@
-
+from datetime import datetime
+from typing import Any, Optional
 from pydantic import BaseModel
 
-class StockPrice(BaseModel):
+
+class StockPriceViewModel(BaseModel):
     ticker: str
     date: str
     open: float
@@ -10,13 +12,12 @@ class StockPrice(BaseModel):
     low: float
     volume: int
 
-    
-class Predicted(BaseModel):
-    ticker: str
-    previous: str
-    predicted_value: float
-    real_value: float
-    prediction_type: str
-    direction: str
-    real_direction: str
-    date: str
+class PredictedViewModel(BaseModel):
+    ticker: Optional[str]
+    previous: Optional[float]
+    predicted_value: Optional[float]
+    real_value: Optional[float]
+    prediction_type: Optional[str]
+    direction: Optional[str]
+    real_direction: Optional[str]
+    date: Optional[Any]

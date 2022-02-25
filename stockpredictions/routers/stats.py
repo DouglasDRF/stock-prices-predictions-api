@@ -11,7 +11,7 @@ async def get_real_current_overall_accuracy():
     if response is not None:
         return response
 @stats_router.get('/stats/accuracy/{ticker}', tags=['Stats'])
-async def get_real_current_overall_accuracy(ticker: str):
+async def get_real_current_accuracy_by_ticker(ticker: str):
     response = stats_service.get_real_current_accuracy_by_ticker(ticker)
     if response is not None:
         return response

@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 
 from stockpredictions.services.service_models.model_responses import FillHistoryResponse, StockPriceResponse
-from stockpredictions.services.service_models.nested_models import Predicted
+from stockpredictions.services.service_models.nested_models import PredictedViewModel
 from .basic_security import get_basic_auth
 from stockpredictions.services import DataService
 
@@ -10,7 +10,7 @@ data_router = APIRouter()
 data_service = DataService()
 
 
-@data_router.get('/data/predictions', response_model=List[Predicted], tags=['Data'])
+@data_router.get('/data/predictions', response_model=List[PredictedViewModel], tags=['Data'])
 async def get_last_predictions():
     return data_service.get_last_predictions()
 
