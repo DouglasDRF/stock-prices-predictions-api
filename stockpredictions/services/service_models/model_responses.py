@@ -1,12 +1,12 @@
 from typing import List
 from pydantic import BaseModel
 
-from stockpredictions.services.service_models.nested_models import StockPrice
+from stockpredictions.services.service_models.nested_models import StockPriceViewModel
 
 
 class StockPriceResponse(BaseModel):
     status_message: str
-    last_stock_price: StockPrice
+    last_stock_price: StockPriceViewModel
 
 
 class FillHistoryResponse(BaseModel):
